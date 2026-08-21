@@ -1,8 +1,6 @@
 /* ==========================================================================
-   Vanish — supplementary styles
-   Tailwind (via CDN) handles utility classes; this file covers the things
-   utility classes can't: scrollbars, iframe resets, message-card states,
-   and the mobile full-screen viewer behaviour.
+   Vanish — styles.css
+   Polished inbox + opened-email interface
    ========================================================================== */
 
 html {
@@ -14,535 +12,197 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Scrollbars ---------- */
+/* ==========================================================================
+   SCROLLBARS
+   ========================================================================== */
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #2A3341 transparent;
 }
+
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
+
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
 *::-webkit-scrollbar-thumb {
-  background-color: #2A3341;
+  background: #2A3341;
   border-radius: 999px;
 }
+
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #3E4B5C;
+  background: #3E4B5C;
 }
 
-/* ---------- Focus visibility (accessibility) ---------- */
-button:focus-visible,
-select:focus-visible,
-input:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid #37E29A;
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
-/* ---------- Address box glow on successful copy ---------- */
-#address-box.flash-copied {
-  border-color: rgba(55, 226, 154, 0.55);
-  box-shadow: 0 0 0 1px rgba(55, 226, 154, 0.25), 0 8px 30px -12px rgba(55, 226, 154, 0.45);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-#copy-tooltip.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-4px) scale(1);
-}
-
-/* ---------- Message list items ---------- */
-.msg-item {
-  position: relative;
-  width: 100%;
-  text-align: left;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-.msg-item:hover {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-.msg-item.active {
-  background-color: rgba(55, 226, 154, 0.07);
-}
-.msg-item.active::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #37E29A;
-}
-.msg-item .msg-snippet {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Pulsing "new" badge */
-.badge-new {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #051912;
-  background: #37E29A;
-  padding: 2px 7px;
-  border-radius: 999px;
-  animation: pulse-ring 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Skeleton loading rows for the inbox while first fetch resolves */
-.msg-skeleton {
-  padding: 14px 16px;
-}
-.msg-skeleton .bar {
-  height: 10px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, #151B25 25%, #1D2430 37%, #151B25 63%);
-  background-size: 400% 100%;
-  animation: shimmer 1.6s ease infinite;
-}
-
-/* ---------- Email content iframe ---------- */
-#viewer-frame {
-  border: none;
-  width: 100%;
-  color-scheme: light;
-}
-
-/* ---------- Attachment chip ---------- */
-.attachment-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #C2CCD8;
-  background: #10151D;
-  border: 1px solid #1D2430;
-  padding: 6px 10px;
-  border-radius: 8px;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-.attachment-chip:hover {
-  border-color: #37E29A66;
-  color: #E7ECF1;
-}
-
-/* ---------- Toast ---------- */
-#toast {
-  animation: fade-in-up 0.25s ease-out both;
-}
-
-/* ---------- Mobile: message viewer becomes a full-screen sheet ---------- */
-@media (max-width: 767px) {
-  #viewer-content.mobile-open {
-    position: fixed;
-    inset: 0;
-    z-index: 40;
-    background: #080B10;
-    border-radius: 0;
-  }
-}
-
-/* ---------- Reduced motion ---------- */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* ---------- Tiny screens: show icon-only labels at 380px+ threshold ---------- */
-@media (min-width: 380px) {
-  .xs\:inline {
-    display: inline;
-  }
-}
 /* ==========================================================================
-   Vanish — polished inbox + message viewer
+   INBOX LIST
    ========================================================================== */
 
-/* ---------- Inbox message cards ---------- */
+#inbox-list {
+  position: relative;
+}
+
+/* Individual email item */
 
 .msg-item {
   width: 100%;
-  display: block;
   text-align: left;
   padding: 15px 16px;
   border: 0;
   border-left: 2px solid transparent;
   background: transparent;
-  color: inherit;
   cursor: pointer;
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease;
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
 }
 
 .msg-item:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(255, 255, 255, 0.035);
 }
 
-.msg-item:focus-visible {
-  outline: none;
-  background: rgba(55, 226, 154, 0.055);
-  border-left-color: rgba(55, 226, 154, 0.55);
+.msg-item:active {
+  transform: scale(0.995);
 }
 
 .msg-item.active {
   background:
     linear-gradient(
       90deg,
-      rgba(55, 226, 154, 0.085),
+      rgba(55, 226, 154, 0.075),
       rgba(55, 226, 154, 0.025)
     );
-  border-left-color: #37e29a;
+  border-left-color: #37E29A;
 }
 
 .msg-item.active:hover {
   background:
     linear-gradient(
       90deg,
-      rgba(55, 226, 154, 0.11),
+      rgba(55, 226, 154, 0.095),
       rgba(55, 226, 154, 0.035)
     );
 }
 
-/* Sender row */
+/* Sender */
 
-.msg-sender-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+.msg-item .text-sm.font-medium {
+  letter-spacing: -0.01em;
 }
 
-.msg-avatar {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Subject */
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(55, 226, 154, 0.14),
-      rgba(138, 140, 240, 0.12)
-    );
-
-  border: 1px solid rgba(255, 255, 255, 0.07);
-
-  color: #37e29a;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
+.msg-item p {
+  max-width: 100%;
 }
 
-/* Sender + date */
-
-.msg-sender {
-  min-width: 0;
-  flex: 1;
-}
-
-.msg-sender-name {
-  display: block;
-  color: #e7ecf1;
-  font-size: 13px;
-  line-height: 1.3;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.msg-date {
-  color: #6b7a8d;
-  font-family:
-    "JetBrains Mono",
-    ui-monospace,
-    SFMono-Regular,
-    monospace;
-  font-size: 10px;
-  white-space: nowrap;
-}
-
-.msg-subject {
-  margin-top: 9px;
-  color: #c2ccd8;
-  font-size: 13px;
-  line-height: 1.35;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+/* Preview/snippet */
 
 .msg-snippet {
-  margin-top: 4px;
-  color: #6b7a8d;
-  font-size: 11px;
-  line-height: 1.45;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.45;
 }
 
-.msg-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 8px;
+/* ==========================================================================
+   INBOX HEADER
+   ========================================================================== */
+
+#inbox-count {
+  min-width: 24px;
+  text-align: center;
 }
 
-.msg-attachment-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+/* ==========================================================================
+   EMPTY INBOX
+   ========================================================================== */
 
-  color: #6b7a8d;
-  font-size: 10px;
+#inbox-empty {
+  min-height: 330px;
 }
 
-.msg-new-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #37e29a;
-  box-shadow: 0 0 10px rgba(55, 226, 154, 0.5);
-}
-
-/* ---------- Message viewer ---------- */
+/* ==========================================================================
+   MESSAGE VIEWER
+   ========================================================================== */
 
 #viewer-content {
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(138, 140, 240, 0.035),
-      transparent 34%
-    );
-}
-
-.viewer-header {
-  padding: 20px 22px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
-}
-
-.viewer-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-
-  margin-bottom: 16px;
-
-  border: 0;
-  background: transparent;
-
-  color: #6b7a8d;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    color 150ms ease,
-    transform 150ms ease;
-}
-
-.viewer-back:hover {
-  color: #37e29a;
-  transform: translateX(-2px);
-}
-
-.viewer-subject-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.viewer-subject-title {
-  margin: 0;
-
-  color: #e7ecf1;
-
-  font-size: 19px;
-  line-height: 1.35;
-
-  font-weight: 700;
-  letter-spacing: -0.015em;
-}
-
-.viewer-meta {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-
-  margin-top: 14px;
-
+  position: relative;
   min-width: 0;
 }
 
-.viewer-avatar {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
+/*
+ * The opened-message header is deliberately separated
+ * from the actual email content.
+ */
 
-  border-radius: 11px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+#viewer-content > div:first-child {
   background:
     linear-gradient(
-      145deg,
-      rgba(55, 226, 154, 0.14),
-      rgba(138, 140, 240, 0.14)
+      180deg,
+      rgba(255, 255, 255, 0.018),
+      rgba(255, 255, 255, 0)
     );
-
-  border: 1px solid rgba(255, 255, 255, 0.075);
-
-  color: #37e29a;
-
-  font-size: 13px;
-  font-weight: 700;
 }
 
-.viewer-meta-main {
-  min-width: 0;
-  flex: 1;
+/* Subject */
+
+#viewer-subject {
+  max-width: calc(100% - 20px);
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
 }
 
-.viewer-sender-name {
-  color: #c2ccd8;
+/* Sender/date metadata */
 
-  font-size: 12px;
-  font-weight: 600;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+#viewer-from,
+#viewer-date {
+  overflow-wrap: anywhere;
 }
 
-.viewer-sender-address {
-  margin-top: 2px;
+/* ==========================================================================
+   EMAIL CONTENT AREA
+   ========================================================================== */
 
-  color: #6b7a8d;
-
-  font-family:
-    "JetBrains Mono",
-    ui-monospace,
-    SFMono-Regular,
-    monospace;
-
-  font-size: 10px;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+#viewer-content .overflow-y-auto {
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(55, 226, 154, 0.025),
+      transparent 45%
+    );
 }
 
-.viewer-date {
-  color: #6b7a8d;
+/*
+ * The iframe is intentionally given a clean email-reading
+ * surface. The actual email HTML remains isolated inside
+ * the sandbox.
+ */
 
-  font-family:
-    "JetBrains Mono",
-    ui-monospace,
-    SFMono-Regular,
-    monospace;
-
-  font-size: 10px;
-
-  white-space: nowrap;
-}
-
-/* ---------- Email body ---------- */
-
-.viewer-body {
-  flex: 1;
-  overflow-y: auto;
-
-  padding: 22px;
-}
-
-.viewer-email-shell {
-  width: 100%;
-  overflow: hidden;
-
-  border-radius: 14px;
-
-  background: #ffffff;
-
-  border: 1px solid rgba(255, 255, 255, 0.09);
-
-  box-shadow:
-    0 10px 35px rgba(0, 0, 0, 0.22),
-    0 1px 0 rgba(255, 255, 255, 0.06) inset;
-}
-
-.viewer-email-shell iframe {
+#viewer-frame {
   display: block;
-
   width: 100%;
   min-height: 430px;
-
-  border: 0;
+  border: 1px solid #2A3341;
+  border-radius: 14px;
   background: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
-/* ---------- Attachments ---------- */
+/* ==========================================================================
+   ATTACHMENTS
+   ========================================================================== */
 
-.attachment-section {
-  margin-top: 16px;
-  padding-top: 15px;
-
-  border-top: 1px solid rgba(255, 255, 255, 0.055);
-}
-
-.attachment-heading {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-
-  margin-bottom: 9px;
-
-  color: #6b7a8d;
-
-  font-size: 10px;
-  font-weight: 600;
-
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-}
-
-.attachment-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+#viewer-attachments {
+  max-width: 100%;
 }
 
 .attachment-chip {
@@ -552,183 +212,281 @@ input:focus-visible,
 
   max-width: 100%;
 
-  padding: 8px 10px;
+  padding: 7px 10px;
 
+  border: 1px solid #2A3341;
   border-radius: 9px;
 
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(21, 27, 37, 0.8);
 
-  border: 1px solid rgba(255, 255, 255, 0.07);
-
-  color: #c2ccd8;
+  color: #C2CCD8;
 
   font-size: 11px;
+  line-height: 1.2;
 
   transition:
-    background-color 150ms ease,
+    background 150ms ease,
     border-color 150ms ease;
 }
 
 .attachment-chip:hover {
-  background: rgba(255, 255, 255, 0.045);
-  border-color: rgba(55, 226, 154, 0.25);
+  background: #1D2430;
+  border-color: #3E4B5C;
 }
 
-.attachment-chip .attachment-name {
-  max-width: 180px;
-
+.attachment-chip span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.attachment-status {
-  color: #6b7a8d;
-  font-size: 9px;
+.attachment-chip span:nth-of-type(1) {
+  max-width: 190px;
 }
 
-/* ---------- Loading state ---------- */
+/* ==========================================================================
+   OPENED MESSAGE EMPTY STATE
+   ========================================================================== */
 
-.viewer-loading {
-  padding: 24px;
+#viewer-empty {
+  min-height: 500px;
 }
 
-.viewer-loading-line {
-  height: 10px;
-
-  margin-bottom: 10px;
-
-  border-radius: 999px;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.04),
-      rgba(255, 255, 255, 0.10),
-      rgba(255, 255, 255, 0.04)
-    );
-
-  background-size: 200% 100%;
-
-  animation: vanish-loading 1.5s linear infinite;
-}
-
-.viewer-loading-line.short {
-  width: 55%;
-}
-
-.viewer-loading-line.medium {
-  width: 75%;
-}
-
-@keyframes vanish-loading {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* ---------- Viewer error ---------- */
-
-.viewer-error {
-  margin: 22px;
-
-  padding: 18px;
-
-  border-radius: 12px;
-
-  background: rgba(239, 68, 68, 0.055);
-
-  border: 1px solid rgba(239, 68, 68, 0.18);
-
-  color: #fca5a5;
-
-  font-size: 12px;
-  line-height: 1.55;
-}
-
-/* ---------- Mobile ---------- */
+/* ==========================================================================
+   MOBILE MESSAGE VIEWER
+   ========================================================================== */
 
 @media (max-width: 767px) {
-  .msg-item {
-    padding: 14px;
-  }
 
-  .msg-avatar {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-  }
+  /*
+   * On mobile, opening an email turns the viewer
+   * into a full-screen reading panel.
+   */
 
   #viewer-content.mobile-open {
     position: fixed;
-
     inset: 0;
-
     z-index: 40;
 
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100dvh;
 
     border-radius: 0;
+    border: 0;
 
-    background: #080b10;
+    background: #080B10;
   }
 
-  #viewer-content.mobile-open .viewer-body {
-    padding: 14px;
+  #viewer-content.mobile-open > div:first-child {
+    flex-shrink: 0;
+    padding-top: calc(
+      16px + env(safe-area-inset-top)
+    );
   }
 
-  #viewer-content.mobile-open .viewer-header {
-    padding: 16px;
+  #viewer-content.mobile-open
+    .overflow-y-auto {
+    padding-bottom: calc(
+      24px + env(safe-area-inset-bottom)
+    );
   }
 
-  .viewer-subject-title {
-    font-size: 17px;
+  #viewer-content.mobile-open
+    #viewer-frame {
+    min-height: calc(100dvh - 150px);
+    border-radius: 12px;
   }
 
-  .viewer-email-shell iframe {
-    min-height: calc(100vh - 240px);
+  #viewer-content.mobile-open
+    #btn-close-viewer {
+    display: flex;
   }
 
-  .viewer-meta {
-    align-items: flex-start;
-  }
-
-  .viewer-date {
-    margin-left: auto;
-  }
-}
-
-/* ---------- Small-screen polish ---------- */
-
-@media (max-width: 480px) {
-  .viewer-date {
-    display: none;
-  }
-
-  .viewer-body {
-    padding: 12px;
-  }
-
-  .viewer-header {
-    padding: 16px;
-  }
-
-  .viewer-email-shell {
-    border-radius: 11px;
+  body:has(#viewer-content.mobile-open) {
+    overflow: hidden;
   }
 }
 
-/* ---------- Better focus accessibility ---------- */
+/* ==========================================================================
+   DESKTOP EMAIL VIEWER
+   ========================================================================== */
+
+@media (min-width: 768px) {
+
+  #viewer-content {
+    min-height: 520px;
+  }
+
+  #viewer-content .overflow-y-auto {
+    min-height: 0;
+  }
+
+  #viewer-frame {
+    min-height: 430px;
+  }
+}
+
+/* ==========================================================================
+   ADDRESS PANEL
+   ========================================================================== */
+
+#address-box {
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background 150ms ease;
+}
+
+#address-box:hover {
+  border-color: #3E4B5C;
+}
+
+#address-box.flash-copied {
+  border-color: rgba(55, 226, 154, 0.65);
+  box-shadow:
+    0 0 0 3px rgba(55, 226, 154, 0.08);
+}
+
+/* ==========================================================================
+   COPY TOOLTIP
+   ========================================================================== */
+
+#copy-tooltip.show {
+  opacity: 1;
+  transform:
+    translateX(-50%)
+    scale(1);
+}
+
+/* ==========================================================================
+   POLLING BAR
+   ========================================================================== */
+
+#poll-bar {
+  transition: width 100ms linear;
+}
+
+/* ==========================================================================
+   BUTTON MICRO-INTERACTIONS
+   ========================================================================== */
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
 
 button:focus-visible,
 input:focus-visible,
-select:focus-visible,
-a:focus-visible {
+select:focus-visible {
   outline: 2px solid rgba(55, 226, 154, 0.65);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   TOAST
+   ========================================================================== */
+
+#toast {
+  max-width: min(
+    calc(100vw - 32px),
+    420px
+  );
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  animation:
+    toast-in 180ms ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform:
+      translate(-50%, 8px)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, 0)
+      scale(1);
+  }
+}
+
+/* ==========================================================================
+   CARDS
+   ========================================================================== */
+
+.shadow-card {
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 30px -18px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   AD SLOTS
+   ========================================================================== */
+
+.border-dashed {
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.border-dashed:hover {
+  border-color: #3E4B5C;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+footer a {
+  transition:
+    color 150ms ease,
+    opacity 150ms ease;
+}
+
+footer a:hover {
+  color: #C2CCD8;
+}
+
+/* ==========================================================================
+   SMALL SCREENS
+   ========================================================================== */
+
+@media (max-width: 640px) {
+
+  #viewer-frame {
+    min-height: 380px;
+  }
+
+  .msg-item {
+    padding: 14px 13px;
+  }
+
+  #viewer-content .overflow-y-auto {
+    padding: 14px;
+  }
+
+  .attachment-chip span:nth-of-type(1) {
+    max-width: 140px;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
