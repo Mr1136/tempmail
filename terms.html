@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Terms of Service — Vanish</title>
+
+  <meta
+    name="description"
+    content="Terms of Service for Vanish, a temporary email service."
+  />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: [
+              '"JetBrains Mono"',
+              'ui-monospace',
+              'SFMono-Regular',
+              'monospace'
+            ],
+          },
+          colors: {
+            ink: {
+              950: '#080B10',
+              900: '#0C1017',
+              850: '#10151D',
+              800: '#151B25',
+              700: '#1D2430',
+              600: '#2A3341',
+              500: '#3E4B5C',
+              400: '#6B7A8D',
+              300: '#94A3B5',
+              200: '#C2CCD8',
+              100: '#E7ECF1',
+            },
+            signal: {
+              DEFAULT: '#37E29A',
+              dim: '#1F8A5C',
+              glow: '#37E29A33',
+            },
+            violet: {
+              DEFAULT: '#8A8CF0',
+              dim: '#5457B8',
+            },
+          },
+          boxShadow: {
+            card:
+              '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 30px -18px rgba(0,0,0,0.6)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <!-- Your existing styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
+
+  <!-- Background -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div
+      class="absolute -top-40 left-1/2 -translate-x-1/2 h-[560px] w-[900px] rounded-full bg-signal/[0.06] blur-[120px]"
+    ></div>
+
+    <div
+      class="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full bg-violet/[0.08] blur-[110px]"
+    ></div>
+
+    <div
+      class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.035)_1px,transparent_0)] bg-[size:26px_26px]"
+    ></div>
+  </div>
+
+
+  <!-- Header -->
+  <header class="border-b border-ink-800/80">
+
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
+    >
+
+      <a
+        href="index.html"
+        class="flex items-center gap-2.5"
+      >
+
+        <div
+          class="relative h-8 w-8 rounded-lg bg-ink-850 border border-ink-700 flex items-center justify-center"
+        >
+          <i
+            data-lucide="ghost"
+            class="text-signal"
+            style="width:18px;height:18px"
+          ></i>
+        </div>
+
+        <span
+          class="font-semibold text-[15px] tracking-tight text-ink-100"
+        >
+          Vanish<span class="text-signal">.</span>
+        </span>
+
+      </a>
+
+      <a
+        href="index.html"
+        class="text-xs text-ink-400 hover:text-ink-100 transition-colors"
+      >
+        Back to Vanish
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- Main -->
+  <main
+    class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16"
+  >
+
+    <!-- Page heading -->
+    <div class="mb-10">
+
+      <div
+        class="inline-flex items-center gap-2 rounded-full border border-ink-700 bg-ink-900/70 px-3 py-1.5 text-xs text-ink-400 mb-5"
+      >
+        <i
+          data-lucide="file-text"
+          class="h-3.5 w-3.5 text-signal"
+        ></i>
+
+        Terms of Service
+      </div>
+
+      <h1
+        class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-100"
+      >
+        Terms of Service
+      </h1>
+
+      <p class="mt-3 text-sm text-ink-400">
+        Last updated: August 21, 2026
+      </p>
+
+    </div>
+
+
+    <!-- Content card -->
+    <article
+      class="rounded-2xl border border-ink-700 bg-ink-900/70 backdrop-blur shadow-card p-6 sm:p-8"
+    >
+
+      <!-- Intro -->
+      <section>
+        <p class="text-sm sm:text-[15px] leading-7 text-ink-300">
+          These Terms of Service govern your use of Vanish ("Vanish",
+          "we", "us", or "our"). By accessing or using Vanish, you agree
+          to these Terms. If you do not agree with these Terms, please do
+          not use the service.
+        </p>
+
+        <p class="mt-4 text-sm sm:text-[15px] leading-7 text-ink-300">
+          Vanish provides a simple interface for creating and accessing
+          temporary email addresses. The underlying mailbox service is
+          provided through third-party infrastructure and APIs, including
+          Mail.tm.
+        </p>
+      </section>
+
+
+      <!-- 1 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          1. The Vanish Service
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Vanish allows users to create temporary email addresses and
+          receive email through those addresses. Vanish is intended for
+          short-lived, low-stakes communication and situations where a
+          user does not wish to provide their primary email address.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Vanish does not guarantee that a temporary email address will
+          remain available for any particular period of time or that every
+          email sent to an address will be successfully delivered.
+        </p>
+
+      </section>
+
+
+      <!-- 2 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          2. No Account Required
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Vanish does not require users to create a traditional account
+          or provide a password in order to generate a temporary email
+          address.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Because temporary addresses are not intended to function as
+          permanent accounts, you should not rely on a Vanish address as
+          your sole method of accessing an important service or recovering
+          an account.
+        </p>
+
+      </section>
+
+
+      <!-- 3 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          3. Appropriate Use
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          You agree to use Vanish only for lawful purposes and in a way
+          that does not interfere with the service, its infrastructure,
+          other users, or third-party services.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          You are responsible for all activity carried out using a
+          temporary email address generated through Vanish.
+        </p>
+
+      </section>
+
+
+      <!-- 4 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          4. Prohibited Uses
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          You must not use Vanish to facilitate, conduct, or support
+          unlawful or abusive activity.
+        </p>
+
+        <ul class="mt-4 space-y-2 text-sm leading-7 text-ink-400 list-disc pl-5">
+
+          <li>
+            Fraud, scams, phishing, or impersonation.
+          </li>
+
+          <li>
+            Harassment, threats, stalking, or abuse.
+          </li>
+
+          <li>
+            Distribution of malware or other malicious software.
+          </li>
+
+          <li>
+            Unauthorised access to computer systems, accounts, or networks.
+          </li>
+
+          <li>
+            Circumventing security controls or access restrictions.
+          </li>
+
+          <li>
+            Spamming or distributing unsolicited bulk communications.
+          </li>
+
+          <li>
+            Any activity that violates applicable laws or regulations.
+          </li>
+
+          <li>
+            Any activity intended to disrupt, overload, or interfere with
+            Vanish or its underlying infrastructure.
+          </li>
+
+        </ul>
+
+      </section>
+
+
+      <!-- 5 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          5. Third-Party Services
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Vanish relies on third-party services and infrastructure to
+          provide parts of its functionality. This includes the Mail.tm
+          API and associated email infrastructure.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Third-party services may have their own terms, policies,
+          availability requirements, and technical limitations. Vanish
+          does not control third-party services and cannot guarantee their
+          continued availability or operation.
+        </p>
+
+      </section>
+
+
+      <!-- 6 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          6. Email Availability and Deletion
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Temporary email addresses are not permanent mailboxes. An
+          address may become unavailable, expire, be deleted, or otherwise
+          cease to function without notice.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Emails received through a temporary address may also become
+          inaccessible. You should therefore avoid using Vanish for
+          information that you need to retain permanently.
+        </p>
+
+      </section>
+
+
+      <!-- 7 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          7. Important Accounts and Sensitive Information
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Vanish is not intended for banking, financial services,
+          healthcare, government services, account recovery, password
+          recovery, or other situations where permanent access to an
+          email address is important.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          You should not use a temporary email address as the sole
+          recovery method for an important account.
+        </p>
+
+      </section>
+
+
+      <!-- 8 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          8. Availability of the Service
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Vanish is provided on an "as available" basis. We may modify,
+          suspend, restrict, or discontinue any part of the service at
+          any time.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          We do not guarantee uninterrupted operation, specific delivery
+          times, or that the service will be available at all times.
+        </p>
+
+      </section>
+
+
+      <!-- 9 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          9. Disclaimer
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          To the extent permitted by applicable law, Vanish is provided
+          without warranties of any kind, whether express or implied.
+          This includes warranties regarding availability, reliability,
+          accuracy, suitability, or uninterrupted access to temporary
+          email services.
+        </p>
+
+      </section>
+
+
+      <!-- 10 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          10. Limitation of Liability
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          To the maximum extent permitted by applicable law, Vanish and
+          its operators shall not be liable for losses arising from the
+          use of, or inability to use, the service, including loss of
+          access to temporary email addresses or messages.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Nothing in these Terms excludes or limits liability where such
+          exclusion or limitation would be unlawful under applicable law.
+        </p>
+
+      </section>
+
+
+      <!-- 11 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          11. Changes to the Service
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          We may update, modify, or discontinue features of Vanish at any
+          time. We may also update these Terms when necessary to reflect
+          changes to the service, legal requirements, or operational
+          practices.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          The latest version of these Terms will be published on this
+          page.
+        </p>
+
+      </section>
+
+
+      <!-- 12 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          12. Termination
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          We may restrict or terminate access to Vanish where reasonably
+          necessary, including where we believe the service is being
+          misused, abused, attacked, or used in violation of these Terms.
+        </p>
+
+      </section>
+
+
+      <!-- 13 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          13. Privacy
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          Your use of Vanish is also subject to our
+          <a
+            href="privacy.html"
+            class="text-signal hover:underline"
+          >
+            Privacy Policy
+          </a>.
+        </p>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          The Privacy Policy explains what information may be processed
+          when you use Vanish and how advertising and cookies may operate
+          on the website.
+        </p>
+
+      </section>
+
+
+      <!-- 14 -->
+      <section class="mt-10">
+
+        <h2 class="text-lg font-semibold text-ink-100">
+          14. Contact
+        </h2>
+
+        <p class="mt-3 text-sm leading-7 text-ink-400">
+          If you have questions about these Terms or the Vanish service,
+          you can contact us at:
+        </p>
+
+        <p class="mt-4">
+
+          <a
+            href="mailto:support@vanishtemp.com"
+            class="inline-flex items-center gap-2 rounded-lg border border-ink-700 bg-ink-850 px-3.5 py-2.5 text-sm text-ink-200 hover:border-signal/50 hover:text-signal transition-colors"
+          >
+
+            <i
+              data-lucide="mail"
+              class="h-4 w-4"
+            ></i>
+
+            support@vanishtemp.com
+
+          </a>
+
+        </p>
+
+      </section>
+
+
+      <!-- Final -->
+      <section
+        class="mt-10 pt-8 border-t border-ink-800"
+      >
+
+        <p class="text-xs leading-6 text-ink-500">
+          These Terms are intended to provide clear information about
+          the use of Vanish. They are not a substitute for professional
+          legal advice. If you operate Vanish as a business, consider
+          having these Terms reviewed by a qualified solicitor or lawyer
+          for your specific circumstances.
+        </p>
+
+      </section>
+
+    </article>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="border-t border-ink-800/80 mt-6">
+
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+    >
+
+      <div
+        class="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6"
+      >
+
+        <div class="text-center lg:text-left">
+
+          <a
+            href="index.html"
+            class="inline-flex items-center gap-2"
+          >
+
+            <div
+              class="h-7 w-7 rounded-lg bg-ink-850 border border-ink-700 flex items-center justify-center"
+            >
+
+              <i
+                data-lucide="ghost"
+                class="text-signal"
+                style="width:15px;height:15px"
+              ></i>
+
+            </div>
+
+            <span
+              class="font-semibold text-sm text-ink-200"
+            >
+              Vanish<span class="text-signal">.</span>
+            </span>
+
+          </a>
+
+          <p
+            class="mt-3 text-xs text-ink-500 max-w-sm"
+          >
+            A simple temporary email service for short-lived,
+            low-stakes communication.
+          </p>
+
+        </div>
+
+
+        <nav
+          class="flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-ink-500"
+        >
+
+          <a
+            href="about.html"
+            class="hover:text-ink-200 transition-colors"
+          >
+            About
+          </a>
+
+          <a
+            href="how-it-works.html"
+            class="hover:text-ink-200 transition-colors"
+          >
+            How It Works
+          </a>
+
+          <a
+            href="faq.html"
+            class="hover:text-ink-200 transition-colors"
+          >
+            FAQ
+          </a>
+
+          <a
+            href="privacy.html"
+            class="hover:text-ink-200 transition-colors"
+          >
+            Privacy
+          </a>
+
+          <a
+            href="terms.html"
+            class="text-ink-200 hover:text-signal transition-colors"
+          >
+            Terms
+          </a>
+
+          <a
+            href="contact.html"
+            class="hover:text-ink-200 transition-colors"
+          >
+            Contact
+          </a>
+
+        </nav>
+
+      </div>
+
+
+      <div
+        class="mt-6 pt-5 border-t border-ink-800 text-center text-xs text-ink-600"
+      >
+        © 2026 Vanish. All rights reserved.
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- Icons -->
+  <script>
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>
