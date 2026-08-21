@@ -1,6 +1,20 @@
 /* ==========================================================================
-   Vanish — styles.css
-   Polished inbox + opened-email interface
+   VANISH — POLISHED UI
+   ==========================================================================
+   Tailwind handles the majority of the interface.
+   This file handles:
+   - custom scrollbars
+   - inbox message cards
+   - email viewer
+   - attachments
+   - loading states
+   - mobile viewer
+   - subtle UI polish
+   ========================================================================== */
+
+
+/* ==========================================================================
+   BASE
    ========================================================================== */
 
 html {
@@ -11,6 +25,23 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgba(55, 226, 154, 0.25);
+  color: #fff;
+}
+
 
 /* ==========================================================================
    SCROLLBARS
@@ -39,80 +70,158 @@ body {
   background: #3E4B5C;
 }
 
+
 /* ==========================================================================
-   INBOX LIST
+   TOAST
+   ========================================================================== */
+
+#toast {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+#toast.hidden {
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   COPY FEEDBACK
+   ========================================================================== */
+
+#copy-tooltip.show {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.flash-copied {
+  border-color: rgba(55, 226, 154, 0.65) !important;
+  box-shadow:
+    0 0 0 1px rgba(55, 226, 154, 0.12),
+    0 0 25px rgba(55, 226, 154, 0.08);
+}
+
+
+/* ==========================================================================
+   ADDRESS PANEL
+   ========================================================================== */
+
+#address-box {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+#address-box:hover {
+  border-color: #3E4B5C;
+}
+
+#address-box:focus-within {
+  border-color: rgba(55, 226, 154, 0.45);
+}
+
+
+/* ==========================================================================
+   INBOX
    ========================================================================== */
 
 #inbox-list {
-  position: relative;
+  overscroll-behavior: contain;
 }
 
-/* Individual email item */
+/* Individual email */
 
 .msg-item {
+  position: relative;
+
+  display: block;
+
   width: 100%;
+
+  padding: 15px 15px 14px;
+
   text-align: left;
-  padding: 15px 16px;
-  border: 0;
-  border-left: 2px solid transparent;
+
   background: transparent;
+
+  border-left: 2px solid transparent;
+
+  color: inherit;
+
   cursor: pointer;
+
   transition:
-    background 150ms ease,
-    border-color 150ms ease,
-    transform 150ms ease;
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease;
 }
 
 .msg-item:hover {
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(29, 36, 48, 0.55);
 }
 
 .msg-item:active {
   transform: scale(0.995);
 }
 
+/* Selected message */
+
 .msg-item.active {
   background:
     linear-gradient(
       90deg,
-      rgba(55, 226, 154, 0.075),
+      rgba(55, 226, 154, 0.09),
       rgba(55, 226, 154, 0.025)
     );
+
   border-left-color: #37E29A;
+
+  box-shadow:
+    inset 1px 0 rgba(55, 226, 154, 0.05);
 }
 
 .msg-item.active:hover {
   background:
     linear-gradient(
       90deg,
-      rgba(55, 226, 154, 0.095),
+      rgba(55, 226, 154, 0.12),
       rgba(55, 226, 154, 0.035)
     );
 }
 
 /* Sender */
 
-.msg-item .text-sm.font-medium {
-  letter-spacing: -0.01em;
+.msg-item .msg-sender {
+  color: #E7ECF1;
+  font-weight: 600;
 }
 
 /* Subject */
 
-.msg-item p {
-  max-width: 100%;
+.msg-item .msg-subject {
+  color: #C2CCD8;
 }
 
-/* Preview/snippet */
+/* Snippet */
+
+.msg-item .msg-snippet {
+  color: #6B7A8D;
+}
 
 .msg-snippet {
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
-  line-height: 1.45;
+
+  max-width: 100%;
 }
 
+
 /* ==========================================================================
-   INBOX HEADER
+   INBOX COUNT
    ========================================================================== */
 
 #inbox-count {
@@ -120,42 +229,47 @@ body {
   text-align: center;
 }
 
+
 /* ==========================================================================
    EMPTY INBOX
    ========================================================================== */
 
 #inbox-empty {
-  min-height: 330px;
+  min-height: 360px;
 }
+
 
 /* ==========================================================================
    MESSAGE VIEWER
    ========================================================================== */
 
 #viewer-content {
-  position: relative;
-  min-width: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(21, 27, 37, 0.96),
+      rgba(12, 16, 23, 0.98)
+    );
 }
 
-/*
- * The opened-message header is deliberately separated
- * from the actual email content.
- */
+/* Viewer header */
 
 #viewer-content > div:first-child {
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.018),
-      rgba(255, 255, 255, 0)
+      rgba(12, 16, 23, 0.8),
+      rgba(12, 16, 23, 0.6)
     );
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Subject */
 
 #viewer-subject {
-  max-width: calc(100% - 20px);
-  letter-spacing: -0.015em;
+  max-width: 100%;
   overflow-wrap: anywhere;
 }
 
@@ -166,314 +280,197 @@ body {
   overflow-wrap: anywhere;
 }
 
+
 /* ==========================================================================
-   EMAIL CONTENT AREA
+   EMAIL IFRAME
    ========================================================================== */
 
-#viewer-content .overflow-y-auto {
-  background:
-    radial-gradient(
-      circle at top,
-      rgba(55, 226, 154, 0.025),
-      transparent 45%
-    );
-}
-
-/*
- * The iframe is intentionally given a clean email-reading
- * surface. The actual email HTML remains isolated inside
- * the sandbox.
- */
-
-#viewer-frame {
+.viewer-frame {
   display: block;
+
   width: 100%;
-  min-height: 430px;
-  border: 1px solid #2A3341;
+
+  min-height: 460px;
+
+  border: 1px solid rgba(42, 51, 65, 0.9);
+
   border-radius: 14px;
-  background: #ffffff;
+
+  background: #10151D;
+
+  overflow: hidden;
+
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.03) inset,
-    0 10px 30px rgba(0, 0, 0, 0.18);
+    0 1px 0 rgba(255, 255, 255, 0.025) inset,
+    0 12px 30px rgba(0, 0, 0, 0.18);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.viewer-frame:hover {
+  border-color: rgba(62, 75, 92, 0.95);
+}
+
 
 /* ==========================================================================
-   ATTACHMENTS
+   EMAIL ATTACHMENTS
    ========================================================================== */
 
 #viewer-attachments {
-  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+#viewer-attachments::-webkit-scrollbar {
+  display: none;
 }
 
 .attachment-chip {
   display: inline-flex;
-  align-items: center;
-  gap: 7px;
 
-  max-width: 100%;
+  align-items: center;
+
+  gap: 7px;
 
   padding: 7px 10px;
 
-  border: 1px solid #2A3341;
+  max-width: 100%;
+
   border-radius: 9px;
 
-  background: rgba(21, 27, 37, 0.8);
+  background: rgba(29, 36, 48, 0.8);
+
+  border: 1px solid rgba(62, 75, 92, 0.7);
 
   color: #C2CCD8;
 
   font-size: 11px;
-  line-height: 1.2;
 
   transition:
-    background 150ms ease,
-    border-color 150ms ease;
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .attachment-chip:hover {
-  background: #1D2430;
-  border-color: #3E4B5C;
+  background: rgba(42, 51, 65, 0.9);
+
+  border-color:
+    rgba(55, 226, 154, 0.35);
 }
 
 .attachment-chip span {
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
-.attachment-chip span:nth-of-type(1) {
-  max-width: 190px;
-}
 
 /* ==========================================================================
-   OPENED MESSAGE EMPTY STATE
+   POLL BAR
    ========================================================================== */
 
-#viewer-empty {
-  min-height: 500px;
+#poll-bar {
+  transition: width 0.1s linear;
 }
 
+
 /* ==========================================================================
-   MOBILE MESSAGE VIEWER
+   BUTTON POLISH
+   ========================================================================== */
+
+button {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.12s ease;
+}
+
+button:disabled {
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   EMAIL VIEWER MOBILE
    ========================================================================== */
 
 @media (max-width: 767px) {
 
-  /*
-   * On mobile, opening an email turns the viewer
-   * into a full-screen reading panel.
-   */
-
   #viewer-content.mobile-open {
     position: fixed;
+
     inset: 0;
-    z-index: 40;
+
+    z-index: 100;
 
     width: 100vw;
+
     height: 100dvh;
 
-    border-radius: 0;
-    border: 0;
+    max-height: 100dvh;
 
-    background: #080B10;
+    border-radius: 0;
+
+    background: #0C1017;
+
+    overflow: hidden;
   }
 
   #viewer-content.mobile-open > div:first-child {
     flex-shrink: 0;
-    padding-top: calc(
-      16px + env(safe-area-inset-top)
-    );
   }
 
-  #viewer-content.mobile-open
-    .overflow-y-auto {
-    padding-bottom: calc(
-      24px + env(safe-area-inset-bottom)
-    );
+  #viewer-content.mobile-open .viewer-frame {
+    min-height: 70vh;
+
+    border-radius: 10px;
   }
 
-  #viewer-content.mobile-open
-    #viewer-frame {
-    min-height: calc(100dvh - 150px);
-    border-radius: 12px;
-  }
-
-  #viewer-content.mobile-open
-    #btn-close-viewer {
-    display: flex;
-  }
-
-  body:has(#viewer-content.mobile-open) {
-    overflow: hidden;
-  }
 }
+
 
 /* ==========================================================================
-   DESKTOP EMAIL VIEWER
+   TABLET
    ========================================================================== */
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1023px) {
 
-  #viewer-content {
-    min-height: 520px;
+  .viewer-frame {
+    min-height: 500px;
   }
 
-  #viewer-content .overflow-y-auto {
-    min-height: 0;
-  }
-
-  #viewer-frame {
-    min-height: 430px;
-  }
 }
+
 
 /* ==========================================================================
-   ADDRESS PANEL
+   EMAIL CONTENT LOADING
    ========================================================================== */
 
-#address-box {
-  transition:
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    background 150ms ease;
+.email-loading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 420px;
+
+  color: #6B7A8D;
+
+  font-family:
+    Inter,
+    system-ui,
+    sans-serif;
+
+  font-size: 13px;
 }
 
-#address-box:hover {
-  border-color: #3E4B5C;
-}
-
-#address-box.flash-copied {
-  border-color: rgba(55, 226, 154, 0.65);
-  box-shadow:
-    0 0 0 3px rgba(55, 226, 154, 0.08);
-}
-
-/* ==========================================================================
-   COPY TOOLTIP
-   ========================================================================== */
-
-#copy-tooltip.show {
-  opacity: 1;
-  transform:
-    translateX(-50%)
-    scale(1);
-}
-
-/* ==========================================================================
-   POLLING BAR
-   ========================================================================== */
-
-#poll-bar {
-  transition: width 100ms linear;
-}
-
-/* ==========================================================================
-   BUTTON MICRO-INTERACTIONS
-   ========================================================================== */
-
-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid rgba(55, 226, 154, 0.65);
-  outline-offset: 2px;
-}
-
-/* ==========================================================================
-   TOAST
-   ========================================================================== */
-
-#toast {
-  max-width: min(
-    calc(100vw - 32px),
-    420px
-  );
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  animation:
-    toast-in 180ms ease-out;
-}
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform:
-      translate(-50%, 8px)
-      scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform:
-      translate(-50%, 0)
-      scale(1);
-  }
-}
-
-/* ==========================================================================
-   CARDS
-   ========================================================================== */
-
-.shadow-card {
-  box-shadow:
-    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
-    0 12px 30px -18px rgba(0, 0, 0, 0.6);
-}
-
-/* ==========================================================================
-   AD SLOTS
-   ========================================================================== */
-
-.border-dashed {
-  transition:
-    border-color 150ms ease,
-    background 150ms ease;
-}
-
-.border-dashed:hover {
-  border-color: #3E4B5C;
-}
-
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
-
-footer a {
-  transition:
-    color 150ms ease,
-    opacity 150ms ease;
-}
-
-footer a:hover {
-  color: #C2CCD8;
-}
-
-/* ==========================================================================
-   SMALL SCREENS
-   ========================================================================== */
-
-@media (max-width: 640px) {
-
-  #viewer-frame {
-    min-height: 380px;
-  }
-
-  .msg-item {
-    padding: 14px 13px;
-  }
-
-  #viewer-content .overflow-y-auto {
-    padding: 14px;
-  }
-
-  .attachment-chip span:nth-of-type(1) {
-    max-width: 140px;
-  }
-}
 
 /* ==========================================================================
    REDUCED MOTION
@@ -485,8 +482,12 @@ footer a:hover {
   *::before,
   *::after {
     scroll-behavior: auto !important;
+
     animation-duration: 0.01ms !important;
+
     animation-iteration-count: 1 !important;
+
     transition-duration: 0.01ms !important;
   }
+
 }
