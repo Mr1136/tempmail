@@ -1,222 +1,265 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
 
-<title>Vanish — Free Disposable Temporary Email</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
 
-<meta
-  name="description"
-  content="Vanish gives you a free temporary email address instantly. Receive emails without signup, protect your primary inbox, and delete your disposable address when you're done."
-/>
+  <title>Vanish — Free Disposable Temporary Email</title>
 
-<meta name="robots" content="index, follow" />
-<meta name="theme-color" content="#080B10" />
+  <meta
+    name="description"
+    content="Vanish gives you a free temporary email address instantly. Receive emails without signup, protect your primary inbox, and delete your disposable address when you're done."
+  />
 
-<!-- Open Graph -->
-<meta property="og:title" content="Vanish — Disposable Email, Instantly" />
-<meta
-  property="og:description"
-  content="Generate a free temporary email address instantly. No signup. No personal information required."
-/>
-<meta property="og:type" content="website" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#080B10" />
+  <meta name="color-scheme" content="dark" />
 
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
+  <!-- =====================================================
+       APP / PWA
+  ====================================================== -->
 
-<script>
-  tailwind.config = {
-    darkMode: 'class',
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Vanish" />
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  />
 
-    theme: {
-      extend: {
+  <link rel="manifest" href="./manifest.json" />
 
-        fontFamily: {
-          sans: [
-            'Inter',
-            'ui-sans-serif',
-            'system-ui',
-            'sans-serif'
-          ],
+  <!-- =====================================================
+       ICONS
+  ====================================================== -->
 
-          mono: [
-            '"JetBrains Mono"',
-            'ui-monospace',
-            'SFMono-Regular',
-            'monospace'
-          ],
-        },
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="./favicon.svg"
+  />
 
-        colors: {
+  <link
+    rel="alternate icon"
+    href="./favicon.ico"
+  />
 
-          ink: {
-            950: '#080B10',
-            900: '#0C1017',
-            850: '#10151D',
-            800: '#151B25',
-            700: '#1D2430',
-            600: '#2A3341',
-            500: '#3E4B5C',
-            400: '#6B7A8D',
-            300: '#94A3B5',
-            200: '#C2CCD8',
-            100: '#E7ECF1',
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="./apple-touch-icon.png"
+  />
+
+  <!-- =====================================================
+       OPEN GRAPH
+  ====================================================== -->
+
+  <meta
+    property="og:title"
+    content="Vanish — Disposable Email, Instantly"
+  />
+
+  <meta
+    property="og:description"
+    content="Generate a free temporary email address instantly. No signup. No personal information required."
+  />
+
+  <meta property="og:type" content="website" />
+
+  <!-- =====================================================
+       FONTS
+  ====================================================== -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- =====================================================
+       TAILWIND
+  ====================================================== -->
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+
+      theme: {
+        extend: {
+
+          fontFamily: {
+            sans: [
+              "Inter",
+              "ui-sans-serif",
+              "system-ui",
+              "sans-serif"
+            ],
+
+            mono: [
+              '"JetBrains Mono"',
+              "ui-monospace",
+              "SFMono-Regular",
+              "monospace"
+            ]
           },
 
-          signal: {
-            DEFAULT: '#37E29A',
-            dim: '#1F8A5C',
-            glow: '#37E29A33',
-          },
+          colors: {
 
-          violet: {
-            DEFAULT: '#8A8CF0',
-            dim: '#5457B8',
-          },
-        },
-
-        boxShadow: {
-
-          'glow-signal':
-            '0 0 0 1px rgba(55,226,154,0.25), 0 8px 30px -8px rgba(55,226,154,0.35)',
-
-          'card':
-            '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 30px -18px rgba(0,0,0,0.6)',
-        },
-
-        keyframes: {
-
-          blink: {
-            '0%, 45%': {
-              opacity: 1
+            ink: {
+              950: "#080B10",
+              900: "#0C1017",
+              850: "#10151D",
+              800: "#151B25",
+              700: "#1D2430",
+              600: "#2A3341",
+              500: "#3E4B5C",
+              400: "#6B7A8D",
+              300: "#94A3B5",
+              200: "#C2CCD8",
+              100: "#E7ECF1"
             },
 
-            '50%, 95%': {
-              opacity: 0
+            signal: {
+              DEFAULT: "#37E29A",
+              dim: "#1F8A5C",
+              glow: "#37E29A33"
             },
 
-            '100%': {
-              opacity: 1
+            violet: {
+              DEFAULT: "#8A8CF0",
+              dim: "#5457B8"
             }
           },
 
-          'pulse-ring': {
-            '0%': {
-              boxShadow:
-                '0 0 0 0 rgba(55,226,154,0.45)'
+          boxShadow: {
+
+            "glow-signal":
+              "0 0 0 1px rgba(55,226,154,0.25), 0 8px 30px -8px rgba(55,226,154,0.35)",
+
+            card:
+              "0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 30px -18px rgba(0,0,0,0.6)"
+          },
+
+          keyframes: {
+
+            blink: {
+              "0%,45%": {
+                opacity: "1"
+              },
+
+              "50%,95%": {
+                opacity: "0"
+              },
+
+              "100%": {
+                opacity: "1"
+              }
             },
 
-            '100%': {
-              boxShadow:
-                '0 0 0 8px rgba(55,226,154,0)'
+            "pulse-ring": {
+              "0%": {
+                boxShadow:
+                  "0 0 0 0 rgba(55,226,154,0.45)"
+              },
+
+              "100%": {
+                boxShadow:
+                  "0 0 0 8px rgba(55,226,154,0)"
+              }
+            },
+
+            "fade-in-up": {
+              "0%": {
+                opacity: "0",
+                transform: "translateY(6px)"
+              },
+
+              "100%": {
+                opacity: "1",
+                transform: "translateY(0)"
+              }
+            },
+
+            shimmer: {
+              "0%": {
+                backgroundPosition: "-200% 0"
+              },
+
+              "100%": {
+                backgroundPosition: "200% 0"
+              }
             }
           },
 
-          'fade-in-up': {
-            '0%': {
-              opacity: 0,
-              transform: 'translateY(6px)'
-            },
+          animation: {
 
-            '100%': {
-              opacity: 1,
-              transform: 'translateY(0)'
-            }
-          },
+            blink:
+              "blink 1.2s step-end infinite",
 
-          shimmer: {
-            '0%': {
-              backgroundPosition: '-200% 0'
-            },
+            "pulse-ring":
+              "pulse-ring 1.6s cubic-bezier(0.4,0,0.6,1) infinite",
 
-            '100%': {
-              backgroundPosition: '200% 0'
-            }
-          },
-        },
+            "fade-in-up":
+              "fade-in-up 0.35s ease-out both",
 
-        animation: {
+            shimmer:
+              "shimmer 2s linear infinite"
+          }
+        }
+      }
+    };
+  </script>
 
-          blink:
-            'blink 1.2s step-end infinite',
+  <!-- =====================================================
+       LUCIDE
+  ====================================================== -->
 
-          'pulse-ring':
-            'pulse-ring 1.6s cubic-bezier(0.4,0,0.6,1) infinite',
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-          'fade-in-up':
-            'fade-in-up 0.35s ease-out both',
+  <!-- =====================================================
+       VANISH CSS
+  ====================================================== -->
 
-          shimmer:
-            'shimmer 2s linear infinite',
-        },
-      },
-    },
-  };
-</script>
+  <link rel="stylesheet" href="./styles.css" />
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- =====================================================
+       ADS
+  ====================================================== -->
 
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-  rel="stylesheet"
-/>
+  <script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6852332292338957"
+    crossorigin="anonymous"
+  ></script>
 
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-
-<link
-  rel="apple-touch-icon"
-  sizes="180x180"
-  href="./apple-touch-icon.png"
->
-
-<meta
-  name="apple-mobile-web-app-title"
-  content="Vanish"
->
-
-<meta
-  name="apple-mobile-web-app-capable"
-  content="yes"
->
-
-<meta
-  name="mobile-web-app-capable"
-  content="yes"
->
-
-<meta
-  name="apple-mobile-web-app-status-bar-style"
-  content="black-translucent"
->
-
-<meta
-  name="theme-color"
-  content="#080B10"
->
-<!-- Vanish supplementary styles -->
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-<link rel="stylesheet" href="styles.css" />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6852332292338957"
-     crossorigin="anonymous"></script>
 </head>
+
 
 <body
   class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen selection:bg-signal/30 selection:text-white"
 >
 
-<!-- =========================================================
-     BACKDROP
-========================================================= -->
 
-<div class="fixed inset-0 -z-10 overflow-hidden">
+<!-- =====================================================
+     BACKGROUND
+====================================================== -->
+
+<div
+  class="fixed inset-0 -z-10 overflow-hidden pointer-events-none"
+  aria-hidden="true"
+>
 
   <div
     class="absolute -top-40 left-1/2 -translate-x-1/2 h-[560px] w-[900px] rounded-full bg-signal/[0.06] blur-[120px]"
@@ -233,18 +276,20 @@
 </div>
 
 
-<!-- =========================================================
+<!-- =====================================================
      HEADER
-========================================================= -->
+====================================================== -->
 
-<header class="border-b border-ink-800/80">
+<header
+  class="border-b border-ink-800/80 bg-ink-950/70 backdrop-blur-xl"
+>
 
   <div
     class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
   >
 
     <a
-      href="index.html"
+      href="./index.html"
       class="flex items-center gap-2.5"
       aria-label="Vanish home"
     >
@@ -291,30 +336,34 @@
 </header>
 
 
-<!-- =========================================================
+<!-- =====================================================
      TOP AD
-========================================================= -->
+====================================================== -->
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+<div
+  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-6"
+>
 
   <div
-    class="w-full h-[90px] rounded-xl border border-dashed border-ink-700/80 bg-ink-900/40 flex items-center justify-center text-[11px] tracking-widest uppercase text-ink-500"
+    class="w-full min-h-[90px] rounded-xl border border-dashed border-ink-700/80 bg-ink-900/40 flex items-center justify-center text-[11px] tracking-widest uppercase text-ink-500"
   >
-    Advertisement · 728×90 Leaderboard
+    Advertisement · 728×90
   </div>
 
 </div>
 
 
-<!-- =========================================================
-     HERO / EMAIL GENERATOR
-========================================================= -->
+<!-- =====================================================
+     HERO
+====================================================== -->
 
 <section
-  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-6"
+  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-9 sm:pt-10 pb-6"
 >
 
-  <div class="text-center max-w-2xl mx-auto mb-8">
+  <div
+    class="text-center max-w-2xl mx-auto mb-8"
+  >
 
     <div
       class="inline-flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full border border-ink-800 bg-ink-900/60 text-[11px] uppercase tracking-widest text-ink-400"
@@ -332,13 +381,11 @@
     <h1
       class="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink-100"
     >
-
       A private inbox that
       <span class="text-signal">
         disappears
       </span>
       when you're done.
-
     </h1>
 
 
@@ -353,10 +400,10 @@
   </div>
 
 
-  <!-- EMAIL CARD -->
+  <!-- EMAIL GENERATOR -->
 
   <div
-    class="max-w-3xl mx-auto rounded-2xl border border-ink-700 bg-ink-900/70 backdrop-blur shadow-card p-5 sm:p-6 animate-fade-in-up"
+    class="max-w-3xl mx-auto rounded-2xl border border-ink-700 bg-ink-900/80 backdrop-blur-xl shadow-card p-5 sm:p-6 animate-fade-in-up"
   >
 
     <div class="flex items-center justify-between mb-3">
@@ -377,13 +424,11 @@
     </div>
 
 
-    <!-- ADDRESS -->
-
     <div class="flex items-stretch gap-2">
 
       <div
         id="address-box"
-        class="group relative flex-1 min-w-0 flex items-center gap-2 rounded-xl bg-ink-950/80 border border-ink-700 px-4 py-3.5 font-mono text-sm sm:text-base overflow-hidden"
+        class="group relative flex-1 min-w-0 flex items-center gap-2 rounded-xl bg-ink-950/90 border border-ink-700 px-4 py-3.5 font-mono text-sm sm:text-base overflow-hidden"
       >
 
         <span
@@ -491,7 +536,7 @@
     </div>
 
 
-    <!-- ACTIONS -->
+    <!-- ACTION BUTTONS -->
 
     <div class="mt-4 grid grid-cols-3 gap-2">
 
@@ -506,7 +551,7 @@
           class="h-4 w-4"
         ></i>
 
-        <span class="hidden xs:inline sm:inline">
+        <span>
           Refresh
         </span>
 
@@ -524,7 +569,7 @@
           class="h-4 w-4"
         ></i>
 
-        <span class="hidden xs:inline sm:inline">
+        <span>
           Random
         </span>
 
@@ -542,7 +587,7 @@
           class="h-4 w-4"
         ></i>
 
-        <span class="hidden xs:inline sm:inline">
+        <span>
           Delete
         </span>
 
@@ -581,252 +626,330 @@
 </section>
 
 
-<!-- =========================================================
+<!-- =====================================================
      MAIN APPLICATION
-========================================================= -->
+====================================================== -->
 
 <main
   class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10"
 >
 
   <div
-    class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6"
+    class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-6"
   >
 
-    <!-- INBOX + VIEWER -->
+    <!-- APPLICATION -->
 
     <div
-      class="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-5 min-h-[520px]"
+      class="min-w-0"
     >
 
-      <!-- INBOX -->
-
       <div
-        class="rounded-2xl border border-ink-700 bg-ink-900/60 backdrop-blur flex flex-col overflow-hidden shadow-card"
+        id="mail-app"
+        class="grid grid-cols-1 md:grid-cols-[minmax(280px,340px)_minmax(0,1fr)] gap-5 min-h-[520px]"
       >
 
-        <div
-          class="flex items-center justify-between px-4 py-3.5 border-b border-ink-800"
-        >
 
-          <div class="flex items-center gap-2">
+        <!-- =================================================
+             INBOX
+        ================================================== -->
 
-            <i
-              data-lucide="inbox"
-              class="h-4 w-4 text-ink-400"
-            ></i>
-
-            <h2
-              class="text-sm font-semibold text-ink-100"
-            >
-              Inbox
-            </h2>
-
-          </div>
-
-          <span
-            id="inbox-count"
-            class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-ink-800 text-ink-300"
-          >
-            0
-          </span>
-
-        </div>
-
-
-        <div
-          id="inbox-list"
-          class="flex-1 overflow-y-auto divide-y divide-ink-800/70 max-h-[560px]"
+        <section
+          id="inbox-panel"
+          class="min-w-0 rounded-2xl border border-ink-700 bg-ink-900/75 backdrop-blur-xl flex flex-col overflow-hidden shadow-card"
         >
 
           <div
-            id="inbox-empty"
-            class="flex flex-col items-center justify-center text-center px-6 py-16 gap-3"
+            class="flex items-center justify-between px-4 py-3.5 border-b border-ink-800 bg-ink-900/90"
+          >
+
+            <div class="flex items-center gap-2">
+
+              <i
+                data-lucide="inbox"
+                class="h-4 w-4 text-ink-400"
+              ></i>
+
+              <h2
+                class="text-sm font-semibold text-ink-100"
+              >
+                Inbox
+              </h2>
+
+            </div>
+
+            <span
+              id="inbox-count"
+              class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-ink-800 text-ink-300"
+            >
+              0
+            </span>
+
+          </div>
+
+
+          <div
+            id="inbox-list"
+            class="flex-1 overflow-y-auto divide-y divide-ink-800/70 max-h-[560px] min-h-0"
           >
 
             <div
-              class="relative h-14 w-14 rounded-2xl bg-ink-850 border border-ink-700 flex items-center justify-center"
+              id="inbox-empty"
+              class="flex flex-col items-center justify-center text-center px-6 py-16 gap-3"
+            >
+
+              <div
+                class="relative h-14 w-14 rounded-2xl bg-ink-850 border border-ink-700 flex items-center justify-center"
+              >
+
+                <i
+                  data-lucide="mail-search"
+                  class="h-6 w-6 text-ink-500"
+                ></i>
+
+                <span
+                  class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-ink-900 border border-ink-700 flex items-center justify-center"
+                >
+
+                  <span
+                    class="h-1.5 w-1.5 rounded-full bg-signal animate-pulse"
+                  ></span>
+
+                </span>
+
+              </div>
+
+              <p
+                class="text-sm font-medium text-ink-200"
+              >
+                Waiting for incoming mail…
+              </p>
+
+              <p
+                class="text-xs text-ink-500 max-w-[220px]"
+              >
+                Anything sent to your address appears here automatically.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             READING SURFACE
+        ================================================== -->
+
+        <section
+          id="viewer-panel"
+          class="relative min-w-0 rounded-2xl border border-ink-700 bg-[#0C1017] flex flex-col overflow-hidden shadow-card"
+        >
+
+          <!-- Empty state -->
+
+          <div
+            id="viewer-empty"
+            class="flex-1 flex flex-col items-center justify-center text-center px-8 py-16 gap-3"
+          >
+
+            <div
+              class="h-14 w-14 rounded-2xl bg-ink-850 border border-ink-700 flex items-center justify-center"
             >
 
               <i
-                data-lucide="mail-search"
+                data-lucide="mail-open"
                 class="h-6 w-6 text-ink-500"
               ></i>
-
-              <span
-                class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-ink-900 border border-ink-700 flex items-center justify-center"
-              >
-
-                <span
-                  class="h-1.5 w-1.5 rounded-full bg-signal animate-pulse"
-                ></span>
-
-              </span>
 
             </div>
 
             <p
               class="text-sm font-medium text-ink-200"
             >
-              Waiting for incoming mail…
+              Select a message
             </p>
 
             <p
-              class="text-xs text-ink-500 max-w-[220px]"
+              class="text-xs text-ink-500 max-w-[240px]"
             >
-              Anything sent to your address shows up here automatically, usually within seconds.
+              Pick an email from the inbox to read it here.
             </p>
 
           </div>
 
-        </div>
 
-      </div>
-
-
-      <!-- MESSAGE VIEWER -->
-
-      <div
-        class="rounded-2xl border border-ink-700 bg-ink-900/60 backdrop-blur flex flex-col overflow-hidden shadow-card"
-      >
-
-        <div
-          id="viewer-empty"
-          class="flex-1 flex flex-col items-center justify-center text-center px-8 py-16 gap-3"
-        >
+          <!-- Actual viewer -->
 
           <div
-            class="h-14 w-14 rounded-2xl bg-ink-850 border border-ink-700 flex items-center justify-center"
+            id="viewer-content"
+            class="hidden flex-1 flex flex-col min-h-0 bg-[#0C1017]"
           >
 
-            <i
-              data-lucide="mouse-pointer-click"
-              class="h-6 w-6 text-ink-500"
-            ></i>
-
-          </div>
-
-          <p
-            class="text-sm font-medium text-ink-200"
-          >
-            Select a message
-          </p>
-
-          <p
-            class="text-xs text-ink-500 max-w-[240px]"
-          >
-            Pick an email from the inbox to read the full contents here.
-          </p>
-
-        </div>
-
-
-        <div
-          id="viewer-content"
-          class="hidden flex-1 flex flex-col min-h-0"
-        >
-
-          <div
-            class="px-5 py-4 border-b border-ink-800"
-          >
+            <!-- Viewer header -->
 
             <div
-              class="flex items-start justify-between gap-3"
+              class="shrink-0 px-5 py-4 border-b border-ink-800 bg-[#0C1017]"
             >
 
-              <h3
-                id="viewer-subject"
-                class="text-base font-semibold text-ink-100 leading-snug"
-              ></h3>
-
-              <button
-                id="btn-close-viewer"
-                type="button"
-                class="md:hidden shrink-0 h-7 w-7 rounded-lg bg-ink-800 flex items-center justify-center"
+              <div
+                class="flex items-start justify-between gap-3"
               >
 
-                <i
-                  data-lucide="x"
-                  class="h-4 w-4 text-ink-300"
-                ></i>
+                <div
+                  class="min-w-0 flex-1"
+                >
 
-              </button>
+                  <div
+                    class="flex items-center gap-2 mb-2"
+                  >
+
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-signal/10 border border-signal/20 text-[10px] uppercase tracking-wider font-semibold text-signal"
+                    >
+
+                      <span
+                        class="h-1.5 w-1.5 rounded-full bg-signal"
+                      ></span>
+
+                      Message
+
+                    </span>
+
+                  </div>
+
+
+                  <h3
+                    id="viewer-subject"
+                    class="text-base sm:text-lg font-semibold text-ink-100 leading-snug break-words"
+                  ></h3>
+
+                </div>
+
+
+                <button
+                  id="btn-close-viewer"
+                  type="button"
+                  aria-label="Close email"
+                  class="md:hidden shrink-0 h-9 w-9 rounded-xl bg-ink-800 hover:bg-ink-700 border border-ink-700 flex items-center justify-center active:scale-95 transition-all"
+                >
+
+                  <i
+                    data-lucide="x"
+                    class="h-4 w-4 text-ink-300"
+                  ></i>
+
+                </button>
+
+              </div>
+
+
+              <!-- Sender / date -->
+
+              <div
+                class="mt-3 flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-x-5 sm:gap-y-1 text-xs text-ink-400"
+              >
+
+                <span
+                  class="flex items-center gap-1.5 min-w-0"
+                >
+
+                  <i
+                    data-lucide="user-round"
+                    class="h-3.5 w-3.5 shrink-0"
+                  ></i>
+
+                  <span
+                    id="viewer-from"
+                    class="truncate"
+                  ></span>
+
+                </span>
+
+
+                <span
+                  class="flex items-center gap-1.5"
+                >
+
+                  <i
+                    data-lucide="clock"
+                    class="h-3.5 w-3.5 shrink-0"
+                  ></i>
+
+                  <span id="viewer-date"></span>
+
+                </span>
+
+              </div>
+
+
+              <!-- Attachments -->
+
+              <div
+                id="viewer-attachments"
+                class="hidden mt-3 flex flex-wrap gap-2"
+              ></div>
 
             </div>
 
 
+            <!-- =================================================
+                 EMAIL BODY
+            ================================================== -->
+
             <div
-              class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-400"
+              id="viewer-body-wrap"
+              class="viewer-body-wrap flex-1 min-h-0 overflow-y-auto overflow-x-hidden bg-[#080B10] p-3 sm:p-5"
             >
 
-              <span
-                class="flex items-center gap-1.5"
+              <div
+                id="viewer-surface"
+                class="relative w-full min-h-full rounded-xl border border-ink-800 bg-[#10151D] shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden"
               >
 
-                <i
-                  data-lucide="user-round"
-                  class="h-3.5 w-3.5"
-                ></i>
+                <!-- Email iframe -->
 
-                <span id="viewer-from"></span>
+                <iframe
+                  id="viewer-frame"
+                  title="Email content"
+                  sandbox="allow-same-origin allow-popups"
+                  scrolling="auto"
+                  class="block w-full border-0 bg-[#10151D]"
+                  style="
+                    min-height:520px;
+                    width:100%;
+                    color-scheme:dark;
+                  "
+                ></iframe>
 
-              </span>
-
-
-              <span
-                class="flex items-center gap-1.5"
-              >
-
-                <i
-                  data-lucide="clock"
-                  class="h-3.5 w-3.5"
-                ></i>
-
-                <span id="viewer-date"></span>
-
-              </span>
+              </div>
 
             </div>
 
-
-            <div
-              id="viewer-attachments"
-              class="hidden mt-3 flex flex-wrap gap-2"
-            ></div>
-
           </div>
 
-
-          <div
-            class="flex-1 overflow-y-auto p-5"
-          >
-
-            <iframe
-              id="viewer-frame"
-              title="Email content"
-              sandbox="allow-same-origin allow-popups"
-              class="w-full min-h-[380px] rounded-lg bg-white"
-            ></iframe>
-
-          </div>
-
-        </div>
+        </section>
 
       </div>
 
     </div>
 
 
-    <!-- SIDEBAR AD -->
+    <!-- =====================================================
+         SIDEBAR AD
+    ====================================================== -->
 
-    <aside class="hidden lg:flex flex-col gap-4">
+    <aside
+      class="hidden lg:flex flex-col gap-4"
+    >
 
       <div
         class="w-[260px] h-[600px] rounded-xl border border-dashed border-ink-700/80 bg-ink-900/40 flex items-center justify-center text-[11px] tracking-widest uppercase text-ink-500 text-center px-4"
       >
 
         Advertisement<br />
-        300×600 Sidebar
+        300×600
 
       </div>
 
@@ -835,18 +958,31 @@
   </div>
 
 
-  <!-- BELOW APP AD -->
+  <!-- =====================================================
+       MOBILE VIEWER NOTE
+  ====================================================== -->
 
   <div
-    class="mt-6 w-full h-[100px] rounded-xl border border-dashed border-ink-700/80 bg-ink-900/40 flex items-center justify-center text-[11px] tracking-widest uppercase text-ink-500"
+    class="md:hidden mt-3 text-center text-[10px] text-ink-600"
   >
-    Advertisement · 970×100 Banner
+    Swipe or use the close button to return to your inbox.
   </div>
 
 
-  <!-- =======================================================
+  <!-- =====================================================
+       BELOW APP AD
+  ====================================================== -->
+
+  <div
+    class="mt-6 w-full min-h-[100px] rounded-xl border border-dashed border-ink-700/80 bg-ink-900/40 flex items-center justify-center text-[11px] tracking-widest uppercase text-ink-500"
+  >
+    Advertisement · 970×100
+  </div>
+
+
+  <!-- =====================================================
        WHY VANISH
-  ======================================================== -->
+  ====================================================== -->
 
   <section
     class="mt-16 max-w-5xl mx-auto"
@@ -881,8 +1017,6 @@
       class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
     >
 
-      <!-- Feature 1 -->
-
       <div
         class="rounded-2xl border border-ink-800 bg-ink-900/50 p-5"
       >
@@ -912,8 +1046,6 @@
 
       </div>
 
-
-      <!-- Feature 2 -->
 
       <div
         class="rounded-2xl border border-ink-800 bg-ink-900/50 p-5"
@@ -945,8 +1077,6 @@
       </div>
 
 
-      <!-- Feature 3 -->
-
       <div
         class="rounded-2xl border border-ink-800 bg-ink-900/50 p-5"
       >
@@ -976,8 +1106,6 @@
 
       </div>
 
-
-      <!-- Feature 4 -->
 
       <div
         class="rounded-2xl border border-ink-800 bg-ink-900/50 p-5"
@@ -1013,9 +1141,9 @@
   </section>
 
 
-  <!-- =======================================================
+  <!-- =====================================================
        HOW IT WORKS
-  ======================================================== -->
+  ====================================================== -->
 
   <section
     class="mt-20 max-w-5xl mx-auto"
@@ -1042,126 +1170,78 @@
       class="mt-10 grid grid-cols-1 md:grid-cols-4 gap-4"
     >
 
-      <!-- Step 1 -->
+      <div
+        class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
+      >
 
-      <div class="relative">
+        <span class="font-mono text-xs text-signal">
+          01
+        </span>
 
-        <div
-          class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
-        >
+        <h3 class="mt-4 text-sm font-semibold text-ink-100">
+          Generate
+        </h3>
 
-          <span
-            class="font-mono text-xs text-signal"
-          >
-            01
-          </span>
-
-          <h3
-            class="mt-4 text-sm font-semibold text-ink-100"
-          >
-            Generate
-          </h3>
-
-          <p
-            class="mt-2 text-xs leading-5 text-ink-500"
-          >
-            Create a random temporary address or choose an available custom name.
-          </p>
-
-        </div>
+        <p class="mt-2 text-xs leading-5 text-ink-500">
+          Create a random temporary address or choose an available custom name.
+        </p>
 
       </div>
 
 
-      <!-- Step 2 -->
+      <div
+        class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
+      >
 
-      <div class="relative">
+        <span class="font-mono text-xs text-signal">
+          02
+        </span>
 
-        <div
-          class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
-        >
+        <h3 class="mt-4 text-sm font-semibold text-ink-100">
+          Use it
+        </h3>
 
-          <span
-            class="font-mono text-xs text-signal"
-          >
-            02
-          </span>
-
-          <h3
-            class="mt-4 text-sm font-semibold text-ink-100"
-          >
-            Use it
-          </h3>
-
-          <p
-            class="mt-2 text-xs leading-5 text-ink-500"
-          >
-            Enter the temporary address wherever you need a disposable inbox.
-          </p>
-
-        </div>
+        <p class="mt-2 text-xs leading-5 text-ink-500">
+          Enter the temporary address wherever you need a disposable inbox.
+        </p>
 
       </div>
 
 
-      <!-- Step 3 -->
+      <div
+        class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
+      >
 
-      <div class="relative">
+        <span class="font-mono text-xs text-signal">
+          03
+        </span>
 
-        <div
-          class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
-        >
+        <h3 class="mt-4 text-sm font-semibold text-ink-100">
+          Receive
+        </h3>
 
-          <span
-            class="font-mono text-xs text-signal"
-          >
-            03
-          </span>
-
-          <h3
-            class="mt-4 text-sm font-semibold text-ink-100"
-          >
-            Receive
-          </h3>
-
-          <p
-            class="mt-2 text-xs leading-5 text-ink-500"
-          >
-            Incoming messages appear automatically in your Vanish inbox.
-          </p>
-
-        </div>
+        <p class="mt-2 text-xs leading-5 text-ink-500">
+          Incoming messages appear automatically in your Vanish inbox.
+        </p>
 
       </div>
 
 
-      <!-- Step 4 -->
+      <div
+        class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
+      >
 
-      <div class="relative">
+        <span class="font-mono text-xs text-signal">
+          04
+        </span>
 
-        <div
-          class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 h-full"
-        >
+        <h3 class="mt-4 text-sm font-semibold text-ink-100">
+          Vanish
+        </h3>
 
-          <span
-            class="font-mono text-xs text-signal"
-          >
-            04
-          </span>
-
-          <h3
-            class="mt-4 text-sm font-semibold text-ink-100"
-          >
-            Vanish
-          </h3>
-
-          <p
-            class="mt-2 text-xs leading-5 text-ink-500"
-          >
-            Delete the inbox when you're done and move on to the next one.
-          </p>
-
-        </div>
+        <p class="mt-2 text-xs leading-5 text-ink-500">
+          Delete the inbox when you're done and move on to the next one.
+        </p>
 
       </div>
 
@@ -1170,9 +1250,9 @@
   </section>
 
 
-  <!-- =======================================================
+  <!-- =====================================================
        USE CASES
-  ======================================================== -->
+  ====================================================== -->
 
   <section
     class="mt-20 max-w-5xl mx-auto"
@@ -1182,9 +1262,7 @@
       class="rounded-3xl border border-ink-800 bg-ink-900/40 overflow-hidden"
     >
 
-      <div
-        class="grid grid-cols-1 lg:grid-cols-2"
-      >
+      <div class="grid grid-cols-1 lg:grid-cols-2">
 
         <div class="p-7 sm:p-9">
 
@@ -1229,7 +1307,6 @@
 
             </li>
 
-
             <li class="flex gap-3">
 
               <i
@@ -1243,7 +1320,6 @@
 
             </li>
 
-
             <li class="flex gap-3">
 
               <i
@@ -1256,7 +1332,6 @@
               </span>
 
             </li>
-
 
             <li class="flex gap-3">
 
@@ -1282,9 +1357,9 @@
   </section>
 
 
-  <!-- =======================================================
+  <!-- =====================================================
        FAQ
-  ======================================================== -->
+  ====================================================== -->
 
   <section
     class="mt-20 max-w-3xl mx-auto"
@@ -1317,9 +1392,7 @@
           class="flex items-center justify-between gap-4 cursor-pointer list-none"
         >
 
-          <span
-            class="text-sm font-medium text-ink-200"
-          >
+          <span class="text-sm font-medium text-ink-200">
             What is temporary email?
           </span>
 
@@ -1330,9 +1403,7 @@
 
         </summary>
 
-        <p
-          class="mt-3 text-sm leading-6 text-ink-500 pr-8"
-        >
+        <p class="mt-3 text-sm leading-6 text-ink-500 pr-8">
           Temporary email is a disposable email address designed
           for short-term use. It can help keep your primary inbox
           separate from websites and services that you don't want
@@ -1348,9 +1419,7 @@
           class="flex items-center justify-between gap-4 cursor-pointer list-none"
         >
 
-          <span
-            class="text-sm font-medium text-ink-200"
-          >
+          <span class="text-sm font-medium text-ink-200">
             Do I need to create an account?
           </span>
 
@@ -1361,9 +1430,7 @@
 
         </summary>
 
-        <p
-          class="mt-3 text-sm leading-6 text-ink-500 pr-8"
-        >
+        <p class="mt-3 text-sm leading-6 text-ink-500 pr-8">
           No. Vanish is designed to work without a traditional
           username, password or registration process.
         </p>
@@ -1377,9 +1444,7 @@
           class="flex items-center justify-between gap-4 cursor-pointer list-none"
         >
 
-          <span
-            class="text-sm font-medium text-ink-200"
-          >
+          <span class="text-sm font-medium text-ink-200">
             Can I send emails from Vanish?
           </span>
 
@@ -1390,9 +1455,7 @@
 
         </summary>
 
-        <p
-          class="mt-3 text-sm leading-6 text-ink-500 pr-8"
-        >
+        <p class="mt-3 text-sm leading-6 text-ink-500 pr-8">
           Vanish is designed for receiving temporary email.
           Sending email is not currently supported.
         </p>
@@ -1406,9 +1469,7 @@
           class="flex items-center justify-between gap-4 cursor-pointer list-none"
         >
 
-          <span
-            class="text-sm font-medium text-ink-200"
-          >
+          <span class="text-sm font-medium text-ink-200">
             Should I use Vanish for important accounts?
           </span>
 
@@ -1419,9 +1480,7 @@
 
         </summary>
 
-        <p
-          class="mt-3 text-sm leading-6 text-ink-500 pr-8"
-        >
+        <p class="mt-3 text-sm leading-6 text-ink-500 pr-8">
           No. Temporary email should not be used for banking,
           account recovery, medical records, important personal
           accounts or anything where losing access to the inbox
@@ -1437,9 +1496,7 @@
           class="flex items-center justify-between gap-4 cursor-pointer list-none"
         >
 
-          <span
-            class="text-sm font-medium text-ink-200"
-          >
+          <span class="text-sm font-medium text-ink-200">
             Is Vanish completely anonymous?
           </span>
 
@@ -1450,9 +1507,7 @@
 
         </summary>
 
-        <p
-          class="mt-3 text-sm leading-6 text-ink-500 pr-8"
-        >
+        <p class="mt-3 text-sm leading-6 text-ink-500 pr-8">
           A temporary email address can reduce the amount of
           personal information you provide to another website,
           but it should not be treated as a guarantee of complete
@@ -1468,9 +1523,7 @@
           class="flex items-center justify-between gap-4 cursor-pointer list-none"
         >
 
-          <span
-            class="text-sm font-medium text-ink-200"
-          >
+          <span class="text-sm font-medium text-ink-200">
             How long do temporary emails last?
           </span>
 
@@ -1481,9 +1534,7 @@
 
         </summary>
 
-        <p
-          class="mt-3 text-sm leading-6 text-ink-500 pr-8"
-        >
+        <p class="mt-3 text-sm leading-6 text-ink-500 pr-8">
           Temporary inboxes are designed to be short-lived.
           Messages may expire automatically, so Vanish should
           never be treated as permanent email storage.
@@ -1496,9 +1547,9 @@
   </section>
 
 
-  <!-- =======================================================
-       PRIVACY / SECURITY
-  ======================================================== -->
+  <!-- =====================================================
+       PRIVACY
+  ====================================================== -->
 
   <section
     class="mt-20 max-w-5xl mx-auto"
@@ -1557,17 +1608,15 @@
   </section>
 
 
-  <!-- =======================================================
+  <!-- =====================================================
        FINAL CTA
-  ======================================================== -->
+  ====================================================== -->
 
   <section
     class="mt-20 mb-8 text-center"
   >
 
-    <div
-      class="max-w-2xl mx-auto"
-    >
+    <div class="max-w-2xl mx-auto">
 
       <div
         class="h-12 w-12 mx-auto rounded-2xl bg-ink-850 border border-ink-700 flex items-center justify-center"
@@ -1597,7 +1646,7 @@
 
       <a
         href="#"
-        onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;"
+        onclick="window.scrollTo({top:0,behavior:'smooth'); return false;"
         class="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-xl bg-signal text-ink-950 text-sm font-semibold hover:bg-emerald-300 transition-colors shadow-glow-signal"
       >
 
@@ -1614,13 +1663,12 @@
 
   </section>
 
-
 </main>
 
 
-<!-- =========================================================
+<!-- =====================================================
      TOAST
-========================================================= -->
+====================================================== -->
 
 <div
   id="toast"
@@ -1639,9 +1687,9 @@
 </div>
 
 
-<!-- =========================================================
+<!-- =====================================================
      FOOTER
-========================================================= -->
+====================================================== -->
 
 <footer
   class="border-t border-ink-800/80 mt-6"
@@ -1658,7 +1706,7 @@
       <div class="text-center lg:text-left">
 
         <a
-          href="index.html"
+          href="./index.html"
           class="inline-flex items-center gap-2"
         >
 
@@ -1698,45 +1746,27 @@
         aria-label="Footer navigation"
       >
 
-        <a
-          href="about.html"
-          class="hover:text-ink-200 transition-colors"
-        >
+        <a href="./about.html" class="hover:text-ink-200 transition-colors">
           About
         </a>
 
-        <a
-          href="how-it-works.html"
-          class="hover:text-ink-200 transition-colors"
-        >
+        <a href="./how-it-works.html" class="hover:text-ink-200 transition-colors">
           How It Works
         </a>
 
-        <a
-          href="faq.html"
-          class="hover:text-ink-200 transition-colors"
-        >
+        <a href="./faq.html" class="hover:text-ink-200 transition-colors">
           FAQ
         </a>
 
-        <a
-          href="privacy.html"
-          class="hover:text-ink-200 transition-colors"
-        >
+        <a href="./privacy.html" class="hover:text-ink-200 transition-colors">
           Privacy
         </a>
 
-        <a
-          href="terms.html"
-          class="hover:text-ink-200 transition-colors"
-        >
+        <a href="./terms.html" class="hover:text-ink-200 transition-colors">
           Terms
         </a>
 
-        <a
-          href="contact.html"
-          class="hover:text-ink-200 transition-colors"
-        >
+        <a href="./contact.html" class="hover:text-ink-200 transition-colors">
           Contact
         </a>
 
@@ -1764,11 +1794,25 @@
 </footer>
 
 
-<!-- =========================================================
+<!-- =====================================================
      APPLICATION JAVASCRIPT
-========================================================= -->
+====================================================== -->
 
-<script src="app.js"></script>
+<script src="./app.js"></script>
+
+
+<!-- =====================================================
+     ICON INITIALISATION
+====================================================== -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  });
+</script>
+
 
 </body>
 </html>
