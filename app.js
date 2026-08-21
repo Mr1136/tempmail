@@ -1,211 +1,158 @@
 /* ==========================================================================
    Vanish — TempMailPortal API integration
    --------------------------------------------------------------------------
-   Keeps the existing Vanish UI and styles intact.
+   Complete application controller.
 
-   API:
-   https://api.tempmailportal.com
-
-   TempMailPortal is receive-only and CORS-enabled.
+   Features:
+   - Temporary inbox creation
+   - Custom email addresses
+   - Random email addresses
+   - Persistent inbox sessions
+   - Automatic polling
+   - Email viewer
+   - Mobile email viewer
+   - Attachment display
+   - Safe sandboxed HTML email rendering
+   - Copy address
+   - Delete / replace inbox
    ========================================================================== */
 
 (() => {
   'use strict';
 
-  // ------------------------------------------------------------------------
-  // Configuration
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // CONFIGURATION
+  // =========================================================================
 
-  const API_BASE =
-    'https://api.tempmailportal.com';
+  const API_BASE = 'https://api.tempmailportal.com';
 
-  // TempMailPortal recommends polling every 8–10 seconds.
   const POLL_MS = 9000;
 
-  const STORAGE_KEY =
-    'vanish.tempmailportal.v1';
+  const STORAGE_KEY = 'vanish.tempmailportal.v1';
 
-  // ------------------------------------------------------------------------
-  // State
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // STATE
+  // =========================================================================
 
   const state = {
     domains: [],
 
     account: null,
-    // {
-    //   address,
-    //   token
-    // }
 
     messages: [],
 
     activeMessageId: null,
 
+    activeMessage: null,
+
     pollTimer: null,
+
     countdownTimer: null,
 
     msRemaining: POLL_MS,
 
     isFetchingList: false,
+
     isBusy: false,
   };
 
-  // ------------------------------------------------------------------------
+  // =========================================================================
   // DOM
-  // ------------------------------------------------------------------------
+  // =========================================================================
 
   const el = {
-    addressText:
-      document.getElementById('address-text'),
+    addressText: document.getElementById('address-text'),
 
-    addressCursor:
-      document.getElementById('address-cursor'),
+    addressCursor: document.getElementById('address-cursor'),
 
-    addressBox:
-      document.getElementById('address-box'),
+    addressBox: document.getElementById('address-box'),
 
-    addressSkeleton:
-      document.getElementById('address-skeleton'),
+    addressSkeleton: document.getElementById('address-skeleton'),
 
-    expiryNote:
-      document.getElementById('expiry-note'),
+    expiryNote: document.getElementById('expiry-note'),
 
-    btnCopy:
-      document.getElementById('btn-copy'),
+    btnCopy: document.getElementById('btn-copy'),
 
-    copyTooltip:
-      document.getElementById('copy-tooltip'),
+    copyTooltip: document.getElementById('copy-tooltip'),
 
-    btnRefresh:
-      document.getElementById('btn-refresh'),
+    btnRefresh: document.getElementById('btn-refresh'),
 
-    btnRandom:
-      document.getElementById('btn-random'),
+    btnRandom: document.getElementById('btn-random'),
 
-    btnDelete:
-      document.getElementById('btn-delete'),
+    btnDelete: document.getElementById('btn-delete'),
 
-    inputPrefix:
-      document.getElementById('input-prefix'),
+    inputPrefix: document.getElementById('input-prefix'),
 
-    selectDomain:
-      document.getElementById('select-domain'),
+    selectDomain: document.getElementById('select-domain'),
 
-    btnCreateCustom:
-      document.getElementById(
-        'btn-create-custom'
-      ),
+    btnCreateCustom: document.getElementById('btn-create-custom'),
 
-    pollBar:
-      document.getElementById('poll-bar'),
+    pollBar: document.getElementById('poll-bar'),
 
-    pollLabel:
-      document.getElementById('poll-label'),
+    pollLabel: document.getElementById('poll-label'),
 
-    inboxList:
-      document.getElementById('inbox-list'),
+    inboxList: document.getElementById('inbox-list'),
 
-    inboxEmpty:
-      document.getElementById('inbox-empty'),
+    inboxEmpty: document.getElementById('inbox-empty'),
 
-    inboxCount:
-      document.getElementById('inbox-count'),
+    inboxCount: document.getElementById('inbox-count'),
 
-    viewerEmpty:
-      document.getElementById('viewer-empty'),
+    viewerEmpty: document.getElementById('viewer-empty'),
 
-    viewerContent:
-      document.getElementById(
-        'viewer-content'
-      ),
+    viewerContent: document.getElementById('viewer-content'),
 
-    viewerSubject:
-      document.getElementById(
-        'viewer-subject'
-      ),
+    viewerSubject: document.getElementById('viewer-subject'),
 
-    viewerFrom:
-      document.getElementById(
-        'viewer-from'
-      ),
+    viewerFrom: document.getElementById('viewer-from'),
 
-    viewerDate:
-      document.getElementById(
-        'viewer-date'
-      ),
+    viewerDate: document.getElementById('viewer-date'),
 
-    viewerAttachments:
-      document.getElementById(
-        'viewer-attachments'
-      ),
+    viewerAttachments: document.getElementById('viewer-attachments'),
 
-    viewerFrame:
-      document.getElementById(
-        'viewer-frame'
-      ),
+    viewerFrame: document.getElementById('viewer-frame'),
 
-    btnCloseViewer:
-      document.getElementById(
-        'btn-close-viewer'
-      ),
+    btnCloseViewer: document.getElementById('btn-close-viewer'),
 
-    toast:
-      document.getElementById('toast'),
+    toast: document.getElementById('toast'),
 
-    toastText:
-      document.getElementById(
-        'toast-text'
-      ),
+    toastText: document.getElementById('toast-text'),
   };
 
   let toastTimer = null;
 
-  // ------------------------------------------------------------------------
-  // Utilities
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // ICONS
+  // =========================================================================
 
   function renderIcons() {
     if (
       window.lucide &&
-      typeof window.lucide.createIcons ===
-        'function'
+      typeof window.lucide.createIcons === 'function'
     ) {
       window.lucide.createIcons();
     }
   }
 
-  function showToast(
-    message,
-    type = 'info'
-  ) {
-    if (
-      !el.toast ||
-      !el.toastText
-    ) {
+  // =========================================================================
+  // TOAST
+  // =========================================================================
+
+  function showToast(message, type = 'info') {
+    if (!el.toast || !el.toastText) {
       return;
     }
 
-    el.toastText.textContent =
-      message;
+    el.toastText.textContent = message;
 
-    el.toast.classList.remove(
-      'hidden'
-    );
+    el.toast.classList.remove('hidden');
+    el.toast.classList.add('flex');
 
-    el.toast.classList.add(
-      'flex'
-    );
-
-    const icon =
-      el.toast.querySelector('i');
+    const icon = el.toast.querySelector('i');
 
     if (icon) {
       icon.setAttribute(
         'data-lucide',
-        type === 'error'
-          ? 'alert-triangle'
-          : 'info'
+        type === 'error' ? 'alert-triangle' : 'info'
       );
 
       renderIcons();
@@ -213,83 +160,71 @@
 
     clearTimeout(toastTimer);
 
-    toastTimer =
-      setTimeout(() => {
-        el.toast.classList.add(
-          'hidden'
-        );
-
-        el.toast.classList.remove(
-          'flex'
-        );
-      }, 3200);
+    toastTimer = setTimeout(() => {
+      el.toast.classList.add('hidden');
+      el.toast.classList.remove('flex');
+    }, 3200);
   }
 
-  function escapeHtml(value) {
-    const div =
-      document.createElement(
-        'div'
-      );
+  // =========================================================================
+  // HTML ESCAPING
+  // =========================================================================
 
-    div.textContent =
-      value ?? '';
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+
+    div.textContent = value ?? '';
 
     return div.innerHTML;
   }
+
+  // =========================================================================
+  // DATE FORMATTING
+  // =========================================================================
 
   function formatDate(dateString) {
     if (!dateString) {
       return '';
     }
 
-    const date =
-      new Date(dateString);
+    const date = new Date(dateString);
 
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
+    if (Number.isNaN(date.getTime())) {
       return '';
     }
 
-    const now =
-      new Date();
+    const now = new Date();
 
     const sameDay =
-      date.toDateString() ===
-      now.toDateString();
+      date.toDateString() === now.toDateString();
 
-    const time =
-      date.toLocaleTimeString(
-        undefined,
-        {
-          hour: '2-digit',
-          minute: '2-digit',
-        }
-      );
+    const time = date.toLocaleTimeString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
     if (sameDay) {
       return `Today, ${time}`;
     }
 
     return (
-      date.toLocaleDateString(
-        undefined,
-        {
-          month: 'short',
-          day: 'numeric',
-        }
-      ) +
-      ` · ${time}`
+      date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year:
+          date.getFullYear() !== now.getFullYear()
+            ? 'numeric'
+            : undefined,
+      }) + ` · ${time}`
     );
   }
 
-  function setBusy(
-    busy
-  ) {
-    state.isBusy =
-      busy;
+  // =========================================================================
+  // BUSY STATE
+  // =========================================================================
+
+  function setBusy(busy) {
+    state.isBusy = busy;
 
     [
       el.btnCopy,
@@ -302,13 +237,9 @@
         return;
       }
 
-      button.disabled =
-        busy;
+      button.disabled = busy;
 
-      button.classList.toggle(
-        'opacity-50',
-        busy
-      );
+      button.classList.toggle('opacity-50', busy);
 
       button.classList.toggle(
         'cursor-not-allowed',
@@ -317,16 +248,16 @@
     });
   }
 
-  function spin(
-    button,
-    spinning
-  ) {
+  // =========================================================================
+  // BUTTON SPINNER
+  // =========================================================================
+
+  function spin(button, spinning) {
     if (!button) {
       return;
     }
 
-    const icon =
-      button.querySelector('i');
+    const icon = button.querySelector('i');
 
     if (!icon) {
       return;
@@ -338,21 +269,19 @@
     );
   }
 
-  function setAddressLoading(
-    loading
-  ) {
-    if (
-      el.addressSkeleton
-    ) {
+  // =========================================================================
+  // ADDRESS LOADING
+  // =========================================================================
+
+  function setAddressLoading(loading) {
+    if (el.addressSkeleton) {
       el.addressSkeleton.classList.toggle(
         'hidden',
         !loading
       );
     }
 
-    if (
-      el.addressCursor
-    ) {
+    if (el.addressCursor) {
       el.addressCursor.classList.toggle(
         'hidden',
         loading
@@ -360,14 +289,11 @@
     }
   }
 
-  // ------------------------------------------------------------------------
+  // =========================================================================
   // API
-  // ------------------------------------------------------------------------
+  // =========================================================================
 
-  async function apiRequest(
-    path,
-    options = {}
-  ) {
+  async function apiRequest(path, options = {}) {
     const {
       method = 'GET',
       body,
@@ -376,23 +302,15 @@
     } = options;
 
     const headers = {
-      Accept:
-        'application/json',
+      Accept: 'application/json',
     };
 
-    if (
-      body !== undefined
-    ) {
-      headers[
-        'Content-Type'
-      ] =
-        'application/json';
+    if (body !== undefined) {
+      headers['Content-Type'] = 'application/json';
     }
 
     if (auth) {
-      if (
-        !state.account?.token
-      ) {
+      if (!state.account?.token) {
         throw new Error(
           'Your inbox session is missing.'
         );
@@ -402,44 +320,33 @@
         `Bearer ${state.account.token}`;
     }
 
-    const controller =
-      new AbortController();
+    const controller = new AbortController();
 
-    const timeout =
-      setTimeout(() => {
-        controller.abort();
-      }, timeoutMs);
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, timeoutMs);
 
     let response;
 
     try {
-      response =
-        await fetch(
-          `${API_BASE}${path}`,
-          {
-            method,
-            headers,
+      response = await fetch(
+        `${API_BASE}${path}`,
+        {
+          method,
+          headers,
 
-            body:
-              body !== undefined
-                ? JSON.stringify(
-                    body
-                  )
-                : undefined,
+          body:
+            body !== undefined
+              ? JSON.stringify(body)
+              : undefined,
 
-            signal:
-              controller.signal,
-          }
-        );
-    } catch (error) {
-      clearTimeout(
-        timeout
+          signal: controller.signal,
+        }
       );
+    } catch (error) {
+      clearTimeout(timeout);
 
-      if (
-        error.name ===
-        'AbortError'
-      ) {
+      if (error.name === 'AbortError') {
         throw new Error(
           'The request timed out.'
         );
@@ -450,35 +357,24 @@
       );
     }
 
-    clearTimeout(
-      timeout
-    );
+    clearTimeout(timeout);
 
-    const text =
-      await response.text();
+    const text = await response.text();
 
     let data = null;
 
     if (text) {
       try {
-        data =
-          JSON.parse(text);
+        data = JSON.parse(text);
       } catch {
         data = null;
       }
     }
 
-    if (
-      !response.ok
-    ) {
-      if (
-        response.status ===
-        429
-      ) {
+    if (!response.ok) {
+      if (response.status === 429) {
         const retry =
-          response.headers.get(
-            'Retry-After'
-          );
+          response.headers.get('Retry-After');
 
         throw new Error(
           retry
@@ -496,19 +392,16 @@
     return data;
   }
 
-  // ------------------------------------------------------------------------
-  // Domains
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // DOMAINS
+  // =========================================================================
 
   async function fetchDomains() {
-    const data =
-      await apiRequest(
-        '/api/domains'
-      );
+    const data = await apiRequest(
+      '/api/domains'
+    );
 
-    if (
-      !Array.isArray(data)
-    ) {
+    if (!Array.isArray(data)) {
       throw new Error(
         'The temporary-mail service returned an invalid domain list.'
       );
@@ -516,8 +409,7 @@
 
     return data.filter(
       (domain) =>
-        typeof domain ===
-          'string' &&
+        typeof domain === 'string' &&
         domain.length > 0
     );
   }
@@ -527,45 +419,33 @@
       state.domains =
         await fetchDomains();
 
-      if (
-        !state.domains.length
-      ) {
+      if (!state.domains.length) {
         throw new Error(
           'No temporary-mail domains are currently available.'
         );
       }
 
-      if (
-        el.selectDomain
-      ) {
-        el.selectDomain.innerHTML =
-          '';
+      if (el.selectDomain) {
+        el.selectDomain.innerHTML = '';
 
-        state.domains.forEach(
-          (domain) => {
-            const option =
-              document.createElement(
-                'option'
-              );
+        state.domains.forEach((domain) => {
+          const option =
+            document.createElement('option');
 
-            option.value =
-              domain;
+          option.value = domain;
 
-            option.textContent =
-              `@${domain}`;
+          option.textContent =
+            `@${domain}`;
 
-            el.selectDomain.appendChild(
-              option
-            );
-          }
-        );
+          el.selectDomain.appendChild(
+            option
+          );
+        });
       }
 
       return true;
     } catch (error) {
-      if (
-        el.selectDomain
-      ) {
+      if (el.selectDomain) {
         el.selectDomain.innerHTML =
           '<option>unavailable</option>';
       }
@@ -580,25 +460,22 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Inbox creation
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // INBOX CREATION
+  // =========================================================================
 
-  async function createInbox(
-    options = {}
-  ) {
-    const data =
-      await apiRequest(
-        '/api/inbox',
-        {
-          method: 'POST',
-          body:
-            Object.keys(options)
-              .length
-              ? options
-              : undefined,
-        }
-      );
+  async function createInbox(options = {}) {
+    const data = await apiRequest(
+      '/api/inbox',
+      {
+        method: 'POST',
+
+        body:
+          Object.keys(options).length
+            ? options
+            : undefined,
+      }
+    );
 
     if (
       !data?.address ||
@@ -610,11 +487,8 @@
     }
 
     return {
-      address:
-        data.address,
-
-      token:
-        data.token,
+      address: data.address,
+      token: data.token,
     };
   }
 
@@ -626,20 +500,16 @@
     login,
     domain
   ) {
-    const cleanLogin =
-      String(
-        login || ''
+    const cleanLogin = String(
+      login || ''
+    )
+      .trim()
+      .toLowerCase()
+      .replace(
+        /[^a-z0-9._-]/g,
+        ''
       )
-        .trim()
-        .toLowerCase()
-        .replace(
-          /[^a-z0-9._-]/g,
-          ''
-        )
-        .slice(
-          0,
-          30
-        );
+      .slice(0, 30);
 
     if (!cleanLogin) {
       throw new Error(
@@ -654,21 +524,17 @@
     }
 
     return createInbox({
-      login:
-        cleanLogin,
-
+      login: cleanLogin,
       domain,
     });
   }
 
-  // ------------------------------------------------------------------------
-  // Persistence
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // STORAGE
+  // =========================================================================
 
   function saveAccount() {
-    if (
-      !state.account
-    ) {
+    if (!state.account) {
       localStorage.removeItem(
         STORAGE_KEY
       );
@@ -678,9 +544,7 @@
 
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(
-        state.account
-      )
+      JSON.stringify(state.account)
     );
   }
 
@@ -696,9 +560,7 @@
       }
 
       const account =
-        JSON.parse(
-          saved
-        );
+        JSON.parse(saved);
 
       if (
         !account?.address ||
@@ -713,9 +575,9 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Message API
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // MESSAGE API
+  // =========================================================================
 
   async function fetchMessages() {
     return apiRequest(
@@ -726,13 +588,9 @@
     );
   }
 
-  async function fetchMessage(
-    id
-  ) {
+  async function fetchMessage(id) {
     return apiRequest(
-      `/api/messages/${encodeURIComponent(
-        id
-      )}`,
+      `/api/messages/${encodeURIComponent(id)}`,
       {
         auth: true,
       }
@@ -749,41 +607,29 @@
     );
   }
 
-  // ------------------------------------------------------------------------
-  // Inbox rendering
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // INBOX RENDERING
+  // =========================================================================
 
   function renderInbox() {
-    if (
-      !el.inboxList
-    ) {
+    if (!el.inboxList) {
       return;
     }
 
     el.inboxList
-      .querySelectorAll(
-        '.msg-item'
-      )
-      .forEach(
-        (node) =>
-          node.remove()
-      );
+      .querySelectorAll('.msg-item')
+      .forEach((node) => {
+        node.remove();
+      });
 
-    const messages =
-      [...state.messages];
+    const messages = [...state.messages];
 
-    if (
-      el.inboxCount
-    ) {
+    if (el.inboxCount) {
       el.inboxCount.textContent =
-        String(
-          messages.length
-        );
+        String(messages.length);
     }
 
-    if (
-      !messages.length
-    ) {
+    if (!messages.length) {
       el.inboxEmpty?.classList.remove(
         'hidden'
       );
@@ -795,87 +641,160 @@
       'hidden'
     );
 
-    messages.forEach(
-      (message) => {
-        const button =
-          document.createElement(
-            'button'
-          );
+    messages.forEach((message) => {
+      const button =
+        document.createElement('button');
 
-        button.type =
-          'button';
+      button.type = 'button';
 
-        button.className =
-          `msg-item block${
-            message.id ===
-            state.activeMessageId
-              ? ' active'
-              : ''
-          }`;
+      button.className =
+        `msg-item block w-full text-left${
+          message.id ===
+          state.activeMessageId
+            ? ' active'
+            : ''
+        }`;
 
-        button.dataset.id =
-          message.id;
+      button.dataset.id =
+        message.id;
 
-        const sender =
-          message.fromName ||
-          message.from ||
-          'Unknown sender';
+      const sender =
+        message.fromName ||
+        message.from ||
+        'Unknown sender';
 
-        button.innerHTML = `
-          <div class="flex items-start justify-between gap-2">
-            <span class="text-sm font-medium text-ink-100 truncate">
-              ${escapeHtml(
-                sender
-              )}
-            </span>
+      const subject =
+        message.subject ||
+        '(no subject)';
 
-            <span class="text-[11px] text-ink-500 font-mono whitespace-nowrap">
-              ${escapeHtml(
-                formatDate(
-                  message.date
-                )
-              )}
-            </span>
+      const snippet =
+        message.intro ||
+        '';
+
+      button.innerHTML = `
+        <div class="flex items-start gap-3">
+
+          <div class="msg-avatar shrink-0">
+            ${escapeHtml(
+              getSenderInitial(sender)
+            )}
           </div>
 
-          <p class="text-sm text-ink-300 mt-0.5 truncate">
-            ${escapeHtml(
-              message.subject ||
-                '(no subject)'
-            )}
-          </p>
+          <div class="min-w-0 flex-1">
 
-          <p class="msg-snippet text-xs text-ink-500 mt-0.5">
-            ${escapeHtml(
-              message.intro ||
-                ''
-            )}
-          </p>
-        `;
+            <div class="flex items-start justify-between gap-2">
 
-        button.addEventListener(
-          'click',
-          () => {
-            openMessage(
-              message.id
-            );
-          }
-        );
+              <span
+                class="text-sm font-semibold text-ink-100 truncate"
+              >
+                ${escapeHtml(sender)}
+              </span>
 
-        el.inboxList.appendChild(
-          button
-        );
+              <span
+                class="text-[10px] text-ink-500 font-mono whitespace-nowrap shrink-0"
+              >
+                ${escapeHtml(
+                  formatInboxDate(
+                    message.date
+                  )
+                )}
+              </span>
+
+            </div>
+
+            <p
+              class="text-sm text-ink-200 mt-1 truncate"
+            >
+              ${escapeHtml(subject)}
+            </p>
+
+            <p
+              class="msg-snippet text-xs text-ink-500 mt-1 line-clamp-2"
+            >
+              ${escapeHtml(snippet)}
+            </p>
+
+          </div>
+
+        </div>
+      `;
+
+      button.addEventListener(
+        'click',
+        () => {
+          openMessage(message.id);
+        }
+      );
+
+      el.inboxList.appendChild(
+        button
+      );
+    });
+  }
+
+  function getSenderInitial(sender) {
+    const clean =
+      String(sender || '')
+        .trim();
+
+    if (!clean) {
+      return '?';
+    }
+
+    return clean
+      .charAt(0)
+      .toUpperCase();
+  }
+
+  function formatInboxDate(dateString) {
+    if (!dateString) {
+      return '';
+    }
+
+    const date =
+      new Date(dateString);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return '';
+    }
+
+    const now = new Date();
+
+    const sameDay =
+      date.toDateString() ===
+      now.toDateString();
+
+    if (sameDay) {
+      return date.toLocaleTimeString(
+        undefined,
+        {
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      );
+    }
+
+    return date.toLocaleDateString(
+      undefined,
+      {
+        month: 'short',
+        day: 'numeric',
       }
     );
   }
 
-  // ------------------------------------------------------------------------
-  // Viewer
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // VIEWER
+  // =========================================================================
 
   function resetViewer() {
-    state.activeMessageId =
-      null;
+    state.activeMessageId = null;
+
+    state.activeMessage = null;
 
     el.viewerContent?.classList.add(
       'hidden'
@@ -889,16 +808,11 @@
       'hidden'
     );
 
-    if (
-      el.viewerFrame
-    ) {
-      el.viewerFrame.srcdoc =
-        '';
+    if (el.viewerFrame) {
+      el.viewerFrame.srcdoc = '';
     }
 
-    if (
-      el.viewerAttachments
-    ) {
+    if (el.viewerAttachments) {
       el.viewerAttachments.innerHTML =
         '';
 
@@ -908,48 +822,40 @@
     }
   }
 
+  // =========================================================================
+  // SAFE EMAIL DOCUMENT
+  // =========================================================================
+
   function buildSafeMessageDocument(
     html,
     text
   ) {
-    /*
-     * Important:
-     *
-     * The old implementation used an iframe that could
-     * attempt to execute scripts from an email.
-     *
-     * We deliberately sandbox email HTML.
-     *
-     * Scripts are NOT allowed.
-     * Forms are NOT allowed.
-     * Top navigation is NOT allowed.
-     *
-     * This prevents an email from executing JavaScript
-     * inside your Vanish page.
-     */
+    let body;
 
-    const body =
-      html && html.length
-        ? html
-        : `
-          <pre style="
-            white-space:pre-wrap;
-            word-break:break-word;
-            font-family:ui-monospace,monospace;
-            font-size:13px;
-            line-height:1.6;
-            margin:0;
-          ">${escapeHtml(
+    if (
+      html &&
+      typeof html === 'string' &&
+      html.trim().length
+    ) {
+      body = html;
+    } else {
+      body = `
+        <div class="plain-email">
+          <pre>${escapeHtml(
             text ||
               '(This message has no readable content.)'
           )}</pre>
-        `;
+        </div>
+      `;
+    }
 
     return `
       <!doctype html>
 
       <html>
+
         <head>
+
           <meta charset="utf-8">
 
           <meta
@@ -958,19 +864,33 @@
           >
 
           <style>
+
+            * {
+              box-sizing: border-box;
+            }
+
             html,
             body {
               margin: 0;
-              padding: 16px;
-              background: #fff;
-              color: #111;
+              padding: 0;
+              background: #ffffff;
+              color: #111827;
               font-family:
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
                 sans-serif;
+              font-size: 14px;
+              line-height: 1.6;
               word-wrap: break-word;
               overflow-wrap: anywhere;
+            }
+
+            body {
+              padding: 28px;
             }
 
             img {
@@ -978,33 +898,215 @@
               height: auto;
             }
 
+            video,
+            iframe {
+              max-width: 100%;
+            }
+
             table {
               max-width: 100%;
-              width: auto;
             }
 
             pre {
               white-space: pre-wrap;
+              word-break: break-word;
+              font-family:
+                ui-monospace,
+                SFMono-Regular,
+                Menlo,
+                Monaco,
+                Consolas,
+                monospace;
+              font-size: 13px;
+              line-height: 1.7;
             }
 
             a {
-              color: #0b6b4d;
+              color: #087f5b;
             }
+
+            blockquote {
+              margin-left: 0;
+              padding-left: 16px;
+              border-left: 3px solid #d1d5db;
+              color: #6b7280;
+            }
+
+            .plain-email {
+              white-space: normal;
+            }
+
           </style>
+
         </head>
 
         <body>
+
           ${body}
+
         </body>
+
       </html>
     `;
   }
 
+  // =========================================================================
+  // EMAIL VIEWER HEADER ENHANCEMENTS
+  // =========================================================================
+
+  function ensureViewerToolbar() {
+    if (!el.viewerContent) {
+      return null;
+    }
+
+    let toolbar =
+      el.viewerContent.querySelector(
+        '.vanish-viewer-toolbar'
+      );
+
+    if (toolbar) {
+      return toolbar;
+    }
+
+    toolbar =
+      document.createElement('div');
+
+    toolbar.className =
+      'vanish-viewer-toolbar';
+
+    toolbar.innerHTML = `
+      <div class="flex items-center justify-between gap-3">
+
+        <div class="flex items-center gap-2">
+
+          <button
+            type="button"
+            class="viewer-tool-btn"
+            data-viewer-action="refresh"
+            title="Refresh message"
+          >
+            <i
+              data-lucide="refresh-cw"
+              style="width:15px;height:15px"
+            ></i>
+            <span class="hidden sm:inline">
+              Refresh
+            </span>
+          </button>
+
+          <button
+            type="button"
+            class="viewer-tool-btn"
+            data-viewer-action="copy"
+            title="Copy sender email"
+          >
+            <i
+              data-lucide="copy"
+              style="width:15px;height:15px"
+            ></i>
+            <span class="hidden sm:inline">
+              Copy sender
+            </span>
+          </button>
+
+        </div>
+
+        <button
+          type="button"
+          class="viewer-tool-btn viewer-close-btn"
+          data-viewer-action="close"
+          title="Close message"
+        >
+          <i
+            data-lucide="x"
+            style="width:15px;height:15px"
+          ></i>
+          <span class="hidden sm:inline">
+            Close
+          </span>
+        </button>
+
+      </div>
+    `;
+
+    const header =
+      el.viewerContent.querySelector(
+        ':scope > div'
+      );
+
+    if (header) {
+      el.viewerContent.insertBefore(
+        toolbar,
+        header
+      );
+    } else {
+      el.viewerContent.prepend(
+        toolbar
+      );
+    }
+
+    toolbar
+      .querySelector(
+        '[data-viewer-action="refresh"]'
+      )
+      ?.addEventListener(
+        'click',
+        () => {
+          if (state.activeMessageId) {
+            openMessage(
+              state.activeMessageId,
+              true
+            );
+          }
+        }
+      );
+
+    toolbar
+      .querySelector(
+        '[data-viewer-action="copy"]'
+      )
+      ?.addEventListener(
+        'click',
+        copySender
+      );
+
+    toolbar
+      .querySelector(
+        '[data-viewer-action="close"]'
+      )
+      ?.addEventListener(
+        'click',
+        closeViewer
+      );
+
+    renderIcons();
+
+    return toolbar;
+  }
+
+  // =========================================================================
+  // OPEN MESSAGE
+  // =========================================================================
+
   async function openMessage(
-    id
+    id,
+    forceRefresh = false
   ) {
-    state.activeMessageId =
-      id;
+    if (!id) {
+      return;
+    }
+
+    if (
+      state.activeMessageId === id &&
+      state.activeMessage &&
+      !forceRefresh
+    ) {
+      return;
+    }
+
+    state.activeMessageId = id;
+
+    state.activeMessage = null;
 
     renderInbox();
 
@@ -1020,8 +1122,14 @@
       'mobile-open'
     );
 
+    ensureViewerToolbar();
+
+    // -------------------------------------------------------
+    // Loading state
+    // -------------------------------------------------------
+
     el.viewerSubject.textContent =
-      'Loading…';
+      'Loading message…';
 
     el.viewerFrom.textContent =
       '';
@@ -1029,72 +1137,103 @@
     el.viewerDate.textContent =
       '';
 
-    el.viewerAttachments.innerHTML =
-      '';
+    if (el.viewerAttachments) {
+      el.viewerAttachments.innerHTML =
+        '';
 
-    el.viewerAttachments.classList.add(
-      'hidden'
-    );
+      el.viewerAttachments.classList.add(
+        'hidden'
+      );
+    }
 
-    /*
-     * The sandbox prevents scripts from executing.
-     *
-     * allow-same-origin isn't included intentionally.
-     *
-     * This also removes the "Blocked script execution
-     * in about:blank" problem from your console.
-     */
-    el.viewerFrame.setAttribute(
-      'sandbox',
-      ''
-    );
+    if (el.viewerFrame) {
+      el.viewerFrame.setAttribute(
+        'sandbox',
+        ''
+      );
 
-    el.viewerFrame.srcdoc =
-      `
-        <div style="
-          font-family:sans-serif;
-          padding:24px;
-          color:#94A3B5;
-        ">
-          Loading message…
-        </div>
+      el.viewerFrame.srcdoc = `
+        <!doctype html>
+
+        <html>
+
+          <body style="
+            margin:0;
+            padding:40px;
+            background:#ffffff;
+            color:#94a3b8;
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+            text-align:center;
+          ">
+
+            <div style="
+              font-size:13px;
+            ">
+              Loading message…
+            </div>
+
+          </body>
+
+        </html>
       `;
+    }
 
     try {
       const message =
-        await fetchMessage(
-          id
-        );
+        await fetchMessage(id);
 
       if (
-        state.activeMessageId !==
-        id
+        state.activeMessageId !== id
       ) {
         return;
       }
+
+      state.activeMessage =
+        message;
+
+      // -----------------------------------------------------
+      // Subject
+      // -----------------------------------------------------
 
       el.viewerSubject.textContent =
         message.subject ||
         '(no subject)';
 
+      // -----------------------------------------------------
+      // Sender
+      // -----------------------------------------------------
+
+      const senderName =
+        message.fromName ||
+        '';
+
+      const senderEmail =
+        message.from ||
+        'Unknown sender';
+
       el.viewerFrom.textContent =
-        message.fromName
-          ? `${message.fromName} <${message.from}>`
-          : message.from ||
-            'Unknown sender';
+        senderName
+          ? `${senderName} <${senderEmail}>`
+          : senderEmail;
+
+      // -----------------------------------------------------
+      // Date
+      // -----------------------------------------------------
 
       el.viewerDate.textContent =
         formatDate(
           message.date
         );
 
+      // -----------------------------------------------------
+      // HTML
+      // -----------------------------------------------------
+
       const html =
         Array.isArray(
           message.html
         )
-          ? message.html.join(
-              ''
-            )
+          ? message.html.join('')
           : message.html;
 
       el.viewerFrame.srcdoc =
@@ -1103,29 +1242,63 @@
           message.text
         );
 
+      // -----------------------------------------------------
+      // Attachments
+      // -----------------------------------------------------
+
       renderAttachments(
-        message.attachments ||
-          []
+        message.attachments || []
       );
 
       renderIcons();
+
     } catch (error) {
+      if (
+        state.activeMessageId !== id
+      ) {
+        return;
+      }
+
       el.viewerSubject.textContent =
         'Could not load this message';
 
-      el.viewerFrame.srcdoc =
-        `
-          <div style="
-            font-family:sans-serif;
-            padding:24px;
+      el.viewerFrom.textContent =
+        '';
+
+      el.viewerDate.textContent =
+        '';
+
+      el.viewerFrame.srcdoc = `
+        <!doctype html>
+
+        <html>
+
+          <body style="
+            margin:0;
+            padding:32px;
+            background:#ffffff;
             color:#b91c1c;
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
           ">
-            ${escapeHtml(
-              error.message ||
-                'Something went wrong.'
-            )}
-          </div>
-        `;
+
+            <strong>
+              Unable to load this message.
+            </strong>
+
+            <p style="
+              color:#6b7280;
+              font-size:13px;
+            ">
+              ${escapeHtml(
+                error.message ||
+                  'Something went wrong.'
+              )}
+            </p>
+
+          </body>
+
+        </html>
+      `;
 
       showToast(
         error.message ||
@@ -1135,12 +1308,14 @@
     }
   }
 
+  // =========================================================================
+  // ATTACHMENTS
+  // =========================================================================
+
   function renderAttachments(
     attachments
   ) {
-    if (
-      !el.viewerAttachments
-    ) {
+    if (!el.viewerAttachments) {
       return;
     }
 
@@ -1148,6 +1323,7 @@
       '';
 
     if (
+      !Array.isArray(attachments) ||
       !attachments.length
     ) {
       el.viewerAttachments.classList.add(
@@ -1164,40 +1340,49 @@
     attachments.forEach(
       (attachment) => {
         const item =
-          document.createElement(
-            'div'
-          );
+          document.createElement('div');
 
-        /*
-         * TempMailPortal only guarantees attachment
-         * metadata. It explicitly says downloadable
-         * is true only when retained in attachment
-         * storage.
-         */
         const downloadable =
-          attachment.downloadable ===
-          true;
+          attachment.downloadable === true;
 
         item.className =
           'attachment-chip';
 
         item.innerHTML = `
-          <i
-            data-lucide="paperclip"
-            style="width:13px;height:13px"
-          ></i>
+          <div class="flex items-center gap-2 min-w-0">
 
-          <span>
-            ${escapeHtml(
-              attachment.filename ||
-                'attachment'
-            )}
-          </span>
+            <span
+              class="attachment-icon"
+            >
+              <i
+                data-lucide="paperclip"
+                style="width:13px;height:13px"
+              ></i>
+            </span>
 
-          <span class="text-ink-500">
-            ${downloadable
-              ? 'available'
-              : 'not downloadable'}
+            <span
+              class="truncate"
+              title="${escapeHtml(
+                attachment.filename ||
+                  'attachment'
+              )}"
+            >
+              ${escapeHtml(
+                attachment.filename ||
+                  'attachment'
+              )}
+            </span>
+
+          </div>
+
+          <span
+            class="text-[10px] text-ink-500 shrink-0"
+          >
+            ${
+              downloadable
+                ? 'Available'
+                : 'Unavailable'
+            }
           </span>
         `;
 
@@ -1210,15 +1395,70 @@
     renderIcons();
   }
 
-  // ------------------------------------------------------------------------
-  // Refresh inbox
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // COPY SENDER
+  // =========================================================================
 
-  async function refreshMessages(
-    {
-      silent = false,
-    } = {}
-  ) {
+  async function copySender() {
+    const sender =
+      state.activeMessage?.from ||
+      '';
+
+    if (!sender) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+        sender
+      );
+
+      showToast(
+        'Sender address copied.'
+      );
+    } catch {
+      showToast(
+        'Could not copy sender address.',
+        'error'
+      );
+    }
+  }
+
+  // =========================================================================
+  // CLOSE VIEWER
+  // =========================================================================
+
+  function closeViewer() {
+    state.activeMessageId = null;
+
+    state.activeMessage = null;
+
+    el.viewerContent?.classList.remove(
+      'mobile-open'
+    );
+
+    el.viewerContent?.classList.add(
+      'hidden'
+    );
+
+    el.viewerEmpty?.classList.remove(
+      'hidden'
+    );
+
+    if (el.viewerFrame) {
+      el.viewerFrame.srcdoc = '';
+    }
+
+    renderInbox();
+  }
+
+  // =========================================================================
+  // REFRESH MESSAGES
+  // =========================================================================
+
+  async function refreshMessages({
+    silent = false,
+  } = {}) {
     if (
       !state.account ||
       state.isFetchingList
@@ -1226,8 +1466,7 @@
       return;
     }
 
-    state.isFetchingList =
-      true;
+    state.isFetchingList = true;
 
     if (!silent) {
       spin(
@@ -1240,11 +1479,7 @@
       const messages =
         await fetchMessages();
 
-      if (
-        !Array.isArray(
-          messages
-        )
-      ) {
+      if (!Array.isArray(messages)) {
         throw new Error(
           'The inbox returned an invalid response.'
         );
@@ -1279,6 +1514,27 @@
           'New mail just arrived.'
         );
       }
+
+      // If currently reading a message,
+      // refresh its contents when it still exists.
+      if (
+        state.activeMessageId &&
+        messages.some(
+          (message) =>
+            message.id ===
+            state.activeMessageId
+        )
+      ) {
+        /*
+         * Don't aggressively reload the iframe
+         * during background polling.
+         *
+         * The message is only reloaded if the
+         * currently displayed message was previously
+         * unavailable.
+         */
+      }
+
     } catch (error) {
       if (!silent) {
         showToast(
@@ -1300,9 +1556,9 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Polling
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // POLLING
+  // =========================================================================
 
   function stopPolling() {
     clearInterval(
@@ -1313,11 +1569,9 @@
       state.countdownTimer
     );
 
-    state.pollTimer =
-      null;
+    state.pollTimer = null;
 
-    state.countdownTimer =
-      null;
+    state.countdownTimer = null;
   }
 
   function startPolling() {
@@ -1357,16 +1611,12 @@
             ) *
               100;
 
-          if (
-            el.pollBar
-          ) {
+          if (el.pollBar) {
             el.pollBar.style.width =
               `${percentage}%`;
           }
 
-          if (
-            el.pollLabel
-          ) {
+          if (el.pollLabel) {
             el.pollLabel.textContent =
               `next check ${Math.ceil(
                 state.msRemaining /
@@ -1378,9 +1628,9 @@
       );
   }
 
-  // ------------------------------------------------------------------------
-  // Account activation
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // ACTIVATE INBOX
+  // =========================================================================
 
   async function activateInbox(
     account,
@@ -1397,22 +1647,19 @@
     state.activeMessageId =
       null;
 
+    state.activeMessage =
+      null;
+
     saveAccount();
 
-    el.addressText.textContent =
-      account.address;
+    if (el.addressText) {
+      el.addressText.textContent =
+        account.address;
+    }
 
-    setAddressLoading(
-      false
-    );
+    setAddressLoading(false);
 
-    /*
-     * TempMailPortal messages normally expire after
-     * about 24 hours.
-     */
-    if (
-      el.expiryNote
-    ) {
+    if (el.expiryNote) {
       el.expiryNote.textContent =
         'Messages expire after about 24 hours';
     }
@@ -1432,24 +1679,27 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Copy
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // COPY ADDRESS
+  // =========================================================================
 
   async function copyAddress() {
-    if (
-      !state.account
-    ) {
+    if (!state.account) {
       return;
     }
 
     const address =
       state.account.address;
 
+    let copied = false;
+
     try {
       await navigator.clipboard.writeText(
         address
       );
+
+      copied = true;
+
     } catch {
       const textarea =
         document.createElement(
@@ -1472,19 +1722,27 @@
       textarea.select();
 
       try {
-        document.execCommand(
-          'copy'
-        );
+        copied =
+          document.execCommand(
+            'copy'
+          );
       } catch {
-        // Ignore fallback failure.
+        copied = false;
       }
 
       textarea.remove();
     }
 
-    if (
-      el.copyTooltip
-    ) {
+    if (!copied) {
+      showToast(
+        'Could not copy the address.',
+        'error'
+      );
+
+      return;
+    }
+
+    if (el.copyTooltip) {
       el.copyTooltip.classList.add(
         'show'
       );
@@ -1496,9 +1754,7 @@
       }, 1500);
     }
 
-    if (
-      el.addressBox
-    ) {
+    if (el.addressBox) {
       el.addressBox.classList.add(
         'flash-copied'
       );
@@ -1511,14 +1767,12 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Random address
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // RANDOM ADDRESS
+  // =========================================================================
 
   async function newRandomAddress() {
-    if (
-      state.isBusy
-    ) {
+    if (state.isBusy) {
       return;
     }
 
@@ -1529,12 +1783,12 @@
       true
     );
 
-    setAddressLoading(
-      true
-    );
+    setAddressLoading(true);
 
-    el.addressText.textContent =
-      'generating…';
+    if (el.addressText) {
+      el.addressText.textContent =
+        'generating…';
+    }
 
     try {
       const account =
@@ -1543,20 +1797,22 @@
       await activateInbox(
         account
       );
-    } catch (error) {
-      el.addressText.textContent =
-        state.account?.address ||
-        'unavailable';
 
-      setAddressLoading(
-        false
-      );
+    } catch (error) {
+      if (el.addressText) {
+        el.addressText.textContent =
+          state.account?.address ||
+          'unavailable';
+      }
+
+      setAddressLoading(false);
 
       showToast(
         error.message ||
           'Could not create an inbox.',
         'error'
       );
+
     } finally {
       setBusy(false);
 
@@ -1567,14 +1823,12 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Custom address
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // CUSTOM ADDRESS
+  // =========================================================================
 
   async function createCustomAddress() {
-    if (
-      state.isBusy
-    ) {
+    if (state.isBusy) {
       return;
     }
 
@@ -1604,18 +1858,18 @@
         account
       );
 
-      if (
-        el.inputPrefix
-      ) {
+      if (el.inputPrefix) {
         el.inputPrefix.value =
           '';
       }
+
     } catch (error) {
       showToast(
         error.message ||
           'Could not create that address.',
         'error'
       );
+
     } finally {
       setBusy(false);
 
@@ -1626,9 +1880,9 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Delete
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // DELETE INBOX
+  // =========================================================================
 
   async function deleteCurrentInbox() {
     if (
@@ -1646,9 +1900,6 @@
     );
 
     try {
-      /*
-       * Delete the current inbox first.
-       */
       await deleteInbox();
 
       stopPolling();
@@ -1657,18 +1908,14 @@
         STORAGE_KEY
       );
 
-      state.account =
-        null;
+      state.account = null;
 
-      state.messages =
-        [];
+      state.messages = [];
 
-      state.activeMessageId =
-        null;
+      state.activeMessageId = null;
 
-      /*
-       * Then create a fresh inbox.
-       */
+      state.activeMessage = null;
+
       const replacement =
         await createRandomInbox();
 
@@ -1680,6 +1927,7 @@
       showToast(
         'Inbox deleted — new address ready.'
       );
+
     } catch (error) {
       showToast(
         error.message ||
@@ -1687,15 +1935,10 @@
         'error'
       );
 
-      /*
-       * If the old token is still valid,
-       * resume polling.
-       */
-      if (
-        state.account
-      ) {
+      if (state.account) {
         startPolling();
       }
+
     } finally {
       setBusy(false);
 
@@ -1706,9 +1949,9 @@
     }
   }
 
-  // ------------------------------------------------------------------------
-  // Manual refresh
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // MANUAL REFRESH
+  // =========================================================================
 
   async function manualRefresh() {
     state.msRemaining =
@@ -1719,9 +1962,9 @@
     });
   }
 
-  // ------------------------------------------------------------------------
-  // Event listeners
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // EVENT LISTENERS
+  // =========================================================================
 
   function bindEvents() {
     el.btnCopy?.addEventListener(
@@ -1748,8 +1991,7 @@
       'keydown',
       (event) => {
         if (
-          event.key ===
-          'Enter'
+          event.key === 'Enter'
         ) {
           createCustomAddress();
         }
@@ -1772,30 +2014,9 @@
 
     el.btnCloseViewer?.addEventListener(
       'click',
-      () => {
-        state.activeMessageId =
-          null;
-
-        el.viewerContent?.classList.remove(
-          'mobile-open'
-        );
-
-        el.viewerContent?.classList.add(
-          'hidden'
-        );
-
-        el.viewerEmpty?.classList.remove(
-          'hidden'
-        );
-
-        renderInbox();
-      }
+      closeViewer
     );
 
-    /*
-     * When the user returns to the tab,
-     * immediately check the inbox.
-     */
     document.addEventListener(
       'visibilitychange',
       () => {
@@ -1810,41 +2031,57 @@
         }
       }
     );
+
+    // Escape closes the message viewer.
+    document.addEventListener(
+      'keydown',
+      (event) => {
+        if (
+          event.key === 'Escape' &&
+          state.activeMessageId
+        ) {
+          closeViewer();
+        }
+      }
+    );
   }
 
-  // ------------------------------------------------------------------------
-  // Boot
-  // ------------------------------------------------------------------------
+  // =========================================================================
+  // BOOT
+  // =========================================================================
 
   async function boot() {
     renderIcons();
 
     bindEvents();
 
-    setAddressLoading(
-      true
-    );
+    // Create viewer toolbar once.
+    ensureViewerToolbar();
 
-    /*
-     * 1. Load domains.
-     */
+    setAddressLoading(true);
+
+    // -----------------------------------------------------
+    // Load domains
+    // -----------------------------------------------------
+
     const domainsReady =
       await loadDomains();
 
     if (!domainsReady) {
-      setAddressLoading(
-        false
-      );
+      setAddressLoading(false);
 
-      el.addressText.textContent =
-        'unavailable';
+      if (el.addressText) {
+        el.addressText.textContent =
+          'unavailable';
+      }
 
       return;
     }
 
-    /*
-     * 2. Restore an existing inbox if possible.
-     */
+    // -----------------------------------------------------
+    // Restore existing inbox
+    // -----------------------------------------------------
+
     const saved =
       loadAccount();
 
@@ -1860,6 +2097,7 @@
         );
 
         return;
+
       } catch {
         localStorage.removeItem(
           STORAGE_KEY
@@ -1867,9 +2105,10 @@
       }
     }
 
-    /*
-     * 3. Otherwise create a new inbox.
-     */
+    // -----------------------------------------------------
+    // Create new inbox
+    // -----------------------------------------------------
+
     try {
       const account =
         await createRandomInbox();
@@ -1878,13 +2117,14 @@
         account,
         false
       );
-    } catch (error) {
-      setAddressLoading(
-        false
-      );
 
-      el.addressText.textContent =
-        'unavailable';
+    } catch (error) {
+      setAddressLoading(false);
+
+      if (el.addressText) {
+        el.addressText.textContent =
+          'unavailable';
+      }
 
       showToast(
         error.message ||
@@ -1893,6 +2133,10 @@
       );
     }
   }
+
+  // =========================================================================
+  // START
+  // =========================================================================
 
   document.addEventListener(
     'DOMContentLoaded',
