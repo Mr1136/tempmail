@@ -1,268 +1,113 @@
 /* ==========================================================================
-   VANISH — TEMPMAILPORTAL INTEGRATION
-   ==========================================================================
-   Features:
-   - Temporary inbox creation
-   - Random/custom addresses
-   - Persistent inbox session
-   - Automatic polling
-   - Message viewer
-   - Sandboxed email HTML
-   - Dark Vanish email styling
-   - Attachment metadata
-   - Mobile viewer
+   Vanish — TempMailPortal Integration
+   Dark email reading experience
    ========================================================================== */
 
 (() => {
   'use strict';
 
+  // ------------------------------------------------------------------------
+  // Configuration
+  // ------------------------------------------------------------------------
 
-  /* =========================================================================
-     CONFIGURATION
-     ========================================================================= */
+  const API_BASE = 'https://api.tempmailportal.com';
+  const POLL_MS = 9000;
+  const STORAGE_KEY = 'vanish.tempmailportal.v1';
 
-  const API_BASE =
-    'https://api.tempmailportal.com';
-
-  const POLL_MS =
-    9000;
-
-  const STORAGE_KEY =
-    'vanish.tempmailportal.v1';
-
-
-  /* =========================================================================
-     STATE
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // State
+  // ------------------------------------------------------------------------
 
   const state = {
-
     domains: [],
-
     account: null,
-
     messages: [],
-
     activeMessageId: null,
 
     pollTimer: null,
-
     countdownTimer: null,
 
     msRemaining: POLL_MS,
 
     isFetchingList: false,
-
     isBusy: false,
-
   };
 
-
-  /* =========================================================================
-     DOM
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // DOM
+  // ------------------------------------------------------------------------
 
   const el = {
+    addressText: document.getElementById('address-text'),
+    addressCursor: document.getElementById('address-cursor'),
+    addressBox: document.getElementById('address-box'),
+    addressSkeleton: document.getElementById('address-skeleton'),
+    expiryNote: document.getElementById('expiry-note'),
 
-    addressText:
-      document.getElementById(
-        'address-text'
-      ),
+    btnCopy: document.getElementById('btn-copy'),
+    copyTooltip: document.getElementById('copy-tooltip'),
 
-    addressCursor:
-      document.getElementById(
-        'address-cursor'
-      ),
+    btnRefresh: document.getElementById('btn-refresh'),
+    btnRandom: document.getElementById('btn-random'),
+    btnDelete: document.getElementById('btn-delete'),
 
-    addressBox:
-      document.getElementById(
-        'address-box'
-      ),
+    inputPrefix: document.getElementById('input-prefix'),
+    selectDomain: document.getElementById('select-domain'),
+    btnCreateCustom: document.getElementById('btn-create-custom'),
 
-    addressSkeleton:
-      document.getElementById(
-        'address-skeleton'
-      ),
+    pollBar: document.getElementById('poll-bar'),
+    pollLabel: document.getElementById('poll-label'),
 
-    expiryNote:
-      document.getElementById(
-        'expiry-note'
-      ),
+    inboxList: document.getElementById('inbox-list'),
+    inboxEmpty: document.getElementById('inbox-empty'),
+    inboxCount: document.getElementById('inbox-count'),
 
-    btnCopy:
-      document.getElementById(
-        'btn-copy'
-      ),
+    viewerEmpty: document.getElementById('viewer-empty'),
+    viewerContent: document.getElementById('viewer-content'),
 
-    copyTooltip:
-      document.getElementById(
-        'copy-tooltip'
-      ),
+    viewerSubject: document.getElementById('viewer-subject'),
+    viewerFrom: document.getElementById('viewer-from'),
+    viewerDate: document.getElementById('viewer-date'),
 
-    btnRefresh:
-      document.getElementById(
-        'btn-refresh'
-      ),
+    viewerAttachments: document.getElementById('viewer-attachments'),
+    viewerFrame: document.getElementById('viewer-frame'),
 
-    btnRandom:
-      document.getElementById(
-        'btn-random'
-      ),
+    btnCloseViewer: document.getElementById('btn-close-viewer'),
 
-    btnDelete:
-      document.getElementById(
-        'btn-delete'
-      ),
-
-    inputPrefix:
-      document.getElementById(
-        'input-prefix'
-      ),
-
-    selectDomain:
-      document.getElementById(
-        'select-domain'
-      ),
-
-    btnCreateCustom:
-      document.getElementById(
-        'btn-create-custom'
-      ),
-
-    pollBar:
-      document.getElementById(
-        'poll-bar'
-      ),
-
-    pollLabel:
-      document.getElementById(
-        'poll-label'
-      ),
-
-    inboxList:
-      document.getElementById(
-        'inbox-list'
-      ),
-
-    inboxEmpty:
-      document.getElementById(
-        'inbox-empty'
-      ),
-
-    inboxCount:
-      document.getElementById(
-        'inbox-count'
-      ),
-
-    viewerEmpty:
-      document.getElementById(
-        'viewer-empty'
-      ),
-
-    viewerContent:
-      document.getElementById(
-        'viewer-content'
-      ),
-
-    viewerSubject:
-      document.getElementById(
-        'viewer-subject'
-      ),
-
-    viewerFrom:
-      document.getElementById(
-        'viewer-from'
-      ),
-
-    viewerDate:
-      document.getElementById(
-        'viewer-date'
-      ),
-
-    viewerAttachments:
-      document.getElementById(
-        'viewer-attachments'
-      ),
-
-    viewerFrame:
-      document.getElementById(
-        'viewer-frame'
-      ),
-
-    btnCloseViewer:
-      document.getElementById(
-        'btn-close-viewer'
-      ),
-
-    toast:
-      document.getElementById(
-        'toast'
-      ),
-
-    toastText:
-      document.getElementById(
-        'toast-text'
-      ),
-
+    toast: document.getElementById('toast'),
+    toastText: document.getElementById('toast-text'),
   };
-
 
   let toastTimer = null;
 
-
-  /* =========================================================================
-     ICONS
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Icons
+  // ------------------------------------------------------------------------
 
   function renderIcons() {
-
     if (
       window.lucide &&
-      typeof window.lucide.createIcons ===
-        'function'
+      typeof window.lucide.createIcons === 'function'
     ) {
-
       window.lucide.createIcons();
-
     }
-
   }
 
+  // ------------------------------------------------------------------------
+  // Toast
+  // ------------------------------------------------------------------------
 
-  /* =========================================================================
-     TOAST
-     ========================================================================= */
+  function showToast(message, type = 'info') {
+    if (!el.toast || !el.toastText) return;
 
-  function showToast(
-    message,
-    type = 'info'
-  ) {
+    el.toastText.textContent = message;
 
-    if (
-      !el.toast ||
-      !el.toastText
-    ) {
-      return;
-    }
+    el.toast.classList.remove('hidden');
+    el.toast.classList.add('flex');
 
-    el.toastText.textContent =
-      message;
-
-    el.toast.classList.remove(
-      'hidden'
-    );
-
-    el.toast.classList.add(
-      'flex'
-    );
-
-    const icon =
-      el.toast.querySelector(
-        'i'
-      );
+    const icon = el.toast.querySelector('i');
 
     if (icon) {
-
       icon.setAttribute(
         'data-lucide',
         type === 'error'
@@ -271,95 +116,101 @@
       );
 
       renderIcons();
-
     }
 
-    clearTimeout(
-      toastTimer
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+      el.toast.classList.add('hidden');
+      el.toast.classList.remove('flex');
+    }, 3200);
+  }
+
+  // ------------------------------------------------------------------------
+  // Security helpers
+  // ------------------------------------------------------------------------
+
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+  }
+
+  /*
+   * Remove dangerous elements from received email HTML.
+   *
+   * Email HTML is untrusted content.
+   */
+  function sanitiseEmailHtml(html) {
+    if (!html) return '';
+
+    const parser = new DOMParser();
+
+    const document = parser.parseFromString(
+      html,
+      'text/html'
     );
 
-    toastTimer =
-      setTimeout(() => {
-
-        el.toast.classList.add(
-          'hidden'
-        );
-
-        el.toast.classList.remove(
-          'flex'
-        );
-
-      }, 3200);
-
-  }
-
-
-  /* =========================================================================
-     SECURITY / HTML ESCAPING
-     ========================================================================= */
-
-  function escapeHtml(
-    value
-  ) {
-
-    const div =
-      document.createElement(
-        'div'
-      );
-
-    div.textContent =
-      value ?? '';
-
-    return div.innerHTML;
-
-  }
-
-
-  /* =========================================================================
-     DATE FORMATTING
-     ========================================================================= */
-
-  function formatDate(
-    dateString
-  ) {
-
-    if (!dateString) {
-      return '';
-    }
-
-    const date =
-      new Date(
-        dateString
-      );
-
-    if (
-      Number.isNaN(
-        date.getTime()
+    // Remove executable / interactive content.
+    document
+      .querySelectorAll(
+        'script, noscript, iframe, object, embed, form, input, button, textarea, select, video, audio'
       )
-    ) {
+      .forEach((node) => node.remove());
+
+    // Remove event-handler attributes.
+    document
+      .querySelectorAll('*')
+      .forEach((node) => {
+        [...node.attributes].forEach((attribute) => {
+          if (
+            attribute.name.toLowerCase().startsWith('on')
+          ) {
+            node.removeAttribute(attribute.name);
+          }
+        });
+
+        // Prevent arbitrary target behaviour.
+        if (
+          node.hasAttribute('target')
+        ) {
+          node.setAttribute('target', '_blank');
+        }
+      });
+
+    return document.body
+      ? document.body.innerHTML
+      : html;
+  }
+
+  // ------------------------------------------------------------------------
+  // Date formatting
+  // ------------------------------------------------------------------------
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
+
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
       return '';
     }
 
-    const now =
-      new Date();
+    const now = new Date();
 
     const sameDay =
-      date.toDateString() ===
-      now.toDateString();
+      date.toDateString() === now.toDateString();
 
-    const time =
-      date.toLocaleTimeString(
-        undefined,
-        {
-          hour: '2-digit',
-          minute: '2-digit',
-        }
-      );
+    const time = date.toLocaleTimeString(
+      undefined,
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      }
+    );
 
     if (sameDay) {
-
       return `Today, ${time}`;
-
     }
 
     return (
@@ -372,20 +223,14 @@
       ) +
       ` · ${time}`
     );
-
   }
 
+  // ------------------------------------------------------------------------
+  // Busy state
+  // ------------------------------------------------------------------------
 
-  /* =========================================================================
-     BUSY STATE
-     ========================================================================= */
-
-  function setBusy(
-    busy
-  ) {
-
-    state.isBusy =
-      busy;
+  function setBusy(busy) {
+    state.isBusy = busy;
 
     [
       el.btnCopy,
@@ -393,255 +238,140 @@
       el.btnRandom,
       el.btnDelete,
       el.btnCreateCustom,
+    ].forEach((button) => {
+      if (!button) return;
 
-    ].forEach(
-      (button) => {
+      button.disabled = busy;
 
-        if (!button) {
-          return;
-        }
-
-        button.disabled =
-          busy;
-
-        button.classList.toggle(
-          'opacity-50',
-          busy
-        );
-
-        button.classList.toggle(
-          'cursor-not-allowed',
-          busy
-        );
-
-      }
-    );
-
-  }
-
-
-  /* =========================================================================
-     BUTTON SPINNER
-     ========================================================================= */
-
-  function spin(
-    button,
-    spinning
-  ) {
-
-    if (!button) {
-      return;
-    }
-
-    const icon =
-      button.querySelector(
-        'i'
+      button.classList.toggle(
+        'opacity-50',
+        busy
       );
 
-    if (!icon) {
-      return;
-    }
+      button.classList.toggle(
+        'cursor-not-allowed',
+        busy
+      );
+    });
+  }
+
+  function spin(button, spinning) {
+    if (!button) return;
+
+    const icon = button.querySelector('i');
+
+    if (!icon) return;
 
     icon.classList.toggle(
       'animate-spin',
       spinning
     );
-
   }
 
+  function setAddressLoading(loading) {
+    el.addressSkeleton?.classList.toggle(
+      'hidden',
+      !loading
+    );
 
-  /* =========================================================================
-     ADDRESS LOADING
-     ========================================================================= */
-
-  function setAddressLoading(
-    loading
-  ) {
-
-    if (
-      el.addressSkeleton
-    ) {
-
-      el.addressSkeleton.classList.toggle(
-        'hidden',
-        !loading
-      );
-
-    }
-
-    if (
-      el.addressCursor
-    ) {
-
-      el.addressCursor.classList.toggle(
-        'hidden',
-        loading
-      );
-
-    }
-
+    el.addressCursor?.classList.toggle(
+      'hidden',
+      loading
+    );
   }
 
-
-  /* =========================================================================
-     API
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // API
+  // ------------------------------------------------------------------------
 
   async function apiRequest(
     path,
     options = {}
   ) {
-
     const {
       method = 'GET',
       body,
       auth = false,
       timeoutMs = 15000,
-
     } = options;
 
-
     const headers = {
-
-      Accept:
-        'application/json',
-
+      Accept: 'application/json',
     };
 
-
-    if (
-      body !== undefined
-    ) {
-
-      headers[
-        'Content-Type'
-      ] =
+    if (body !== undefined) {
+      headers['Content-Type'] =
         'application/json';
-
     }
 
-
     if (auth) {
-
-      if (
-        !state.account?.token
-      ) {
-
+      if (!state.account?.token) {
         throw new Error(
           'Your inbox session is missing.'
         );
-
       }
 
       headers.Authorization =
         `Bearer ${state.account.token}`;
-
     }
-
 
     const controller =
       new AbortController();
 
-
     const timeout =
       setTimeout(
-        () => {
-          controller.abort();
-        },
+        () => controller.abort(),
         timeoutMs
       );
 
-
     let response;
 
-
     try {
-
-      response =
-        await fetch(
-          `${API_BASE}${path}`,
-          {
-
-            method,
-
-            headers,
-
-            body:
-              body !== undefined
-                ? JSON.stringify(
-                    body
-                  )
-                : undefined,
-
-            signal:
-              controller.signal,
-
-          }
-        );
-
-    } catch (error) {
-
-      clearTimeout(
-        timeout
+      response = await fetch(
+        `${API_BASE}${path}`,
+        {
+          method,
+          headers,
+          body:
+            body !== undefined
+              ? JSON.stringify(body)
+              : undefined,
+          signal: controller.signal,
+        }
       );
+    } catch (error) {
+      clearTimeout(timeout);
 
       if (
-        error.name ===
-        'AbortError'
+        error.name === 'AbortError'
       ) {
-
         throw new Error(
           'The request timed out.'
         );
-
       }
 
       throw new Error(
         'Could not connect to the temporary-mail service.'
       );
-
     }
 
-
-    clearTimeout(
-      timeout
-    );
-
+    clearTimeout(timeout);
 
     const text =
       await response.text();
 
-
     let data = null;
 
-
     if (text) {
-
       try {
-
-        data =
-          JSON.parse(
-            text
-          );
-
+        data = JSON.parse(text);
       } catch {
-
         data = null;
-
       }
-
     }
 
-
-    if (
-      !response.ok
-    ) {
-
-      if (
-        response.status ===
-        429
-      ) {
-
+    if (!response.ok) {
+      if (response.status === 429) {
         const retry =
           response.headers.get(
             'Retry-After'
@@ -652,351 +382,223 @@
             ? `Too many requests. Please wait ${retry} seconds.`
             : 'Too many requests. Please wait a little while.'
         );
-
       }
-
 
       throw new Error(
         data?.error ||
-          `Request failed (${response.status}).`
+        `Request failed (${response.status}).`
       );
-
     }
 
-
     return data;
-
   }
 
-
-  /* =========================================================================
-     DOMAINS
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Domains
+  // ------------------------------------------------------------------------
 
   async function fetchDomains() {
-
     const data =
-      await apiRequest(
-        '/api/domains'
-      );
+      await apiRequest('/api/domains');
 
-
-    if (
-      !Array.isArray(
-        data
-      )
-    ) {
-
+    if (!Array.isArray(data)) {
       throw new Error(
         'The temporary-mail service returned an invalid domain list.'
       );
-
     }
-
 
     return data.filter(
       (domain) =>
-        typeof domain ===
-          'string' &&
+        typeof domain === 'string' &&
         domain.length > 0
     );
-
   }
 
-
   async function loadDomains() {
-
     try {
-
       state.domains =
         await fetchDomains();
 
-
-      if (
-        !state.domains.length
-      ) {
-
+      if (!state.domains.length) {
         throw new Error(
           'No temporary-mail domains are currently available.'
         );
-
       }
 
-
-      if (
-        el.selectDomain
-      ) {
-
-        el.selectDomain.innerHTML =
-          '';
-
+      if (el.selectDomain) {
+        el.selectDomain.innerHTML = '';
 
         state.domains.forEach(
           (domain) => {
-
             const option =
               document.createElement(
                 'option'
               );
 
-            option.value =
-              domain;
-
+            option.value = domain;
             option.textContent =
               `@${domain}`;
 
             el.selectDomain.appendChild(
               option
             );
-
           }
         );
-
       }
-
 
       return true;
-
     } catch (error) {
-
-      if (
-        el.selectDomain
-      ) {
-
+      if (el.selectDomain) {
         el.selectDomain.innerHTML =
           '<option>unavailable</option>';
-
       }
-
 
       showToast(
         error.message ||
-          'Could not load email domains.',
+        'Could not load email domains.',
         'error'
       );
 
-
       return false;
-
     }
-
   }
 
-
-  /* =========================================================================
-     CREATE INBOX
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Inbox
+  // ------------------------------------------------------------------------
 
   async function createInbox(
     options = {}
   ) {
-
     const data =
       await apiRequest(
         '/api/inbox',
         {
-
           method: 'POST',
-
           body:
-            Object.keys(
-              options
-            ).length
+            Object.keys(options).length
               ? options
               : undefined,
-
         }
       );
-
 
     if (
       !data?.address ||
       !data?.token
     ) {
-
       throw new Error(
         'The temporary-mail service did not return a valid inbox.'
       );
-
     }
 
-
     return {
-
-      address:
-        data.address,
-
-      token:
-        data.token,
-
+      address: data.address,
+      token: data.token,
     };
-
   }
-
 
   async function createRandomInbox() {
-
     return createInbox();
-
   }
-
 
   async function createCustomInbox(
     login,
     domain
   ) {
-
     const cleanLogin =
-      String(
-        login || ''
-      )
+      String(login || '')
         .trim()
         .toLowerCase()
         .replace(
           /[^a-z0-9._-]/g,
           ''
         )
-        .slice(
-          0,
-          30
-        );
-
+        .slice(0, 30);
 
     if (!cleanLogin) {
-
       throw new Error(
         'Enter a valid username.'
       );
-
     }
 
-
     if (!domain) {
-
       throw new Error(
         'Choose an email domain.'
       );
-
     }
 
-
     return createInbox({
-
-      login:
-        cleanLogin,
-
+      login: cleanLogin,
       domain,
-
     });
-
   }
 
-
-  /* =========================================================================
-     STORAGE
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Storage
+  // ------------------------------------------------------------------------
 
   function saveAccount() {
-
-    if (
-      !state.account
-    ) {
-
+    if (!state.account) {
       localStorage.removeItem(
         STORAGE_KEY
       );
-
       return;
-
     }
-
 
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(
-        state.account
-      )
+      JSON.stringify(state.account)
     );
-
   }
 
-
   function loadAccount() {
-
     try {
-
       const saved =
         localStorage.getItem(
           STORAGE_KEY
         );
 
-
-      if (!saved) {
-        return null;
-      }
-
+      if (!saved) return null;
 
       const account =
-        JSON.parse(
-          saved
-        );
-
+        JSON.parse(saved);
 
       if (
         !account?.address ||
         !account?.token
       ) {
-
         return null;
-
       }
 
-
       return account;
-
     } catch {
-
       return null;
-
     }
-
   }
 
-
-  /* =========================================================================
-     MESSAGE API
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Message API
+  // ------------------------------------------------------------------------
 
   async function fetchMessages() {
-
     return apiRequest(
       '/api/messages',
       {
         auth: true,
       }
     );
-
   }
 
-
-  async function fetchMessage(
-    id
-  ) {
-
+  async function fetchMessage(id) {
     return apiRequest(
-      `/api/messages/${encodeURIComponent(
-        id
-      )}`,
+      `/api/messages/${encodeURIComponent(id)}`,
       {
         auth: true,
       }
     );
-
   }
 
-
   async function deleteInbox() {
-
     return apiRequest(
       '/api/inbox',
       {
@@ -1004,274 +606,132 @@
         auth: true,
       }
     );
-
   }
 
-
-  /* =========================================================================
-     INBOX RENDERING
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Inbox list
+  // ------------------------------------------------------------------------
 
   function renderInbox() {
-
-    if (
-      !el.inboxList
-    ) {
-      return;
-    }
-
+    if (!el.inboxList) return;
 
     el.inboxList
-      .querySelectorAll(
-        '.msg-item'
-      )
-      .forEach(
-        (node) =>
-          node.remove()
-      );
+      .querySelectorAll('.msg-item')
+      .forEach((node) => node.remove());
 
+    const messages = [...state.messages];
 
-    const messages =
-      [...state.messages];
-
-
-    if (
-      el.inboxCount
-    ) {
-
+    if (el.inboxCount) {
       el.inboxCount.textContent =
-        String(
-          messages.length
-        );
-
+        String(messages.length);
     }
 
-
-    if (
-      !messages.length
-    ) {
-
+    if (!messages.length) {
       el.inboxEmpty?.classList.remove(
         'hidden'
       );
-
       return;
-
     }
-
 
     el.inboxEmpty?.classList.add(
       'hidden'
     );
 
+    messages.forEach((message) => {
+      const button =
+        document.createElement('button');
 
-    messages.forEach(
-      (message) => {
+      button.type = 'button';
 
-        const button =
-          document.createElement(
-            'button'
-          );
-
-
-        button.type =
-          'button';
-
-
-        button.className =
-          'msg-item';
-
-
-        if (
+      button.className =
+        `msg-item${
           message.id ===
           state.activeMessageId
-        ) {
+            ? ' active'
+            : ''
+        }`;
 
-          button.classList.add(
-            'active'
-          );
+      button.dataset.id =
+        message.id;
 
-        }
+      const sender =
+        message.fromName ||
+        message.from ||
+        'Unknown sender';
 
+      const subject =
+        message.subject ||
+        '(no subject)';
 
-        button.dataset.id =
-          message.id;
+      const snippet =
+        message.intro ||
+        'No preview available.';
 
+      button.innerHTML = `
+        <div class="msg-item-top">
 
-        const sender =
-          message.fromName ||
-          message.from ||
-          'Unknown sender';
-
-
-        const subject =
-          message.subject ||
-          '(no subject)';
-
-
-        const snippet =
-          message.intro ||
-          'No preview available';
-
-
-        button.innerHTML = `
-
-          <div class="flex items-start justify-between gap-3">
-
-            <span
-              class="msg-sender text-sm truncate"
-            >
-              ${escapeHtml(
-                sender
-              )}
-            </span>
-
-            <span
-              class="text-[10px] text-ink-500 font-mono whitespace-nowrap shrink-0"
-            >
-              ${escapeHtml(
-                formatDate(
-                  message.date
-                )
-              )}
-            </span>
-
+          <div class="msg-sender">
+            ${escapeHtml(sender)}
           </div>
 
-
-          <p
-            class="msg-subject text-sm mt-1 truncate"
-          >
+          <div class="msg-date">
             ${escapeHtml(
-              subject
+              formatDate(message.date)
             )}
-          </p>
+          </div>
 
+        </div>
 
-          <p
-            class="msg-snippet text-xs mt-1"
-          >
-            ${escapeHtml(
-              snippet
-            )}
-          </p>
+        <div class="msg-subject">
+          ${escapeHtml(subject)}
+        </div>
 
-        `;
+        <div class="msg-snippet">
+          ${escapeHtml(snippet)}
+        </div>
+      `;
 
-
-        button.addEventListener(
-          'click',
-          () => {
-
-            openMessage(
-              message.id
-            );
-
-          }
-        );
-
-
-        el.inboxList.appendChild(
-          button
-        );
-
-      }
-    );
-
-  }
-
-
-  /* =========================================================================
-     VIEWER RESET
-     ========================================================================= */
-
-  function resetViewer() {
-
-    state.activeMessageId =
-      null;
-
-
-    el.viewerContent?.classList.add(
-      'hidden'
-    );
-
-
-    el.viewerContent?.classList.remove(
-      'mobile-open'
-    );
-
-
-    el.viewerEmpty?.classList.remove(
-      'hidden'
-    );
-
-
-    if (
-      el.viewerFrame
-    ) {
-
-      el.viewerFrame.srcdoc =
-        '';
-
-    }
-
-
-    if (
-      el.viewerAttachments
-    ) {
-
-      el.viewerAttachments.innerHTML =
-        '';
-
-
-      el.viewerAttachments.classList.add(
-        'hidden'
+      button.addEventListener(
+        'click',
+        () => openMessage(message.id)
       );
 
-    }
-
+      el.inboxList.appendChild(
+        button
+      );
+    });
   }
 
+  // ------------------------------------------------------------------------
+  // DARK EMAIL DOCUMENT
+  // ------------------------------------------------------------------------
 
-  /* =========================================================================
-     EMAIL DOCUMENT
-     ========================================================================= */
-
-  function buildSafeMessageDocument(
+  function buildDarkEmailDocument(
     html,
     text
   ) {
+    let safeHtml =
+      sanitiseEmailHtml(html);
 
     /*
-     * The message is deliberately placed inside a
-     * completely sandboxed iframe.
-     *
-     * No JavaScript.
-     * No forms.
-     * No top navigation.
-     *
-     * This keeps untrusted email HTML away from
-     * the Vanish application.
+     * If there is no HTML version,
+     * create a readable plain-text version.
      */
-
-    const body =
-      html && html.length
-        ? html
-        : `
-          <div class="plain-message">
-            ${escapeHtml(
-              text ||
-                '(This message has no readable content.)'
-            )}
-          </div>
-        `;
-
+    if (!safeHtml.trim()) {
+      safeHtml = `
+        <div class="plain-text">
+          ${escapeHtml(
+            text ||
+            '(This message has no readable content.)'
+          )}
+        </div>
+      `;
+    }
 
     return `
-
       <!doctype html>
 
-      <html>
+      <html lang="en">
 
       <head>
 
@@ -1279,43 +739,32 @@
 
         <meta
           name="viewport"
-          content="width=device-width,initial-scale=1"
+          content="width=device-width, initial-scale=1"
         >
 
-
         <style>
+
+          :root {
+            color-scheme: dark;
+          }
 
           * {
             box-sizing: border-box;
           }
 
-
           html {
             margin: 0;
             padding: 0;
-
-            background:
-              #10151D !important;
+            background: #0c1017 !important;
           }
 
-
           body {
-
             margin: 0 !important;
-
             padding: 28px !important;
 
-            min-height: 100vh;
+            background: #0c1017 !important;
 
-            background:
-              linear-gradient(
-                180deg,
-                #151B25 0%,
-                #10151D 100%
-              ) !important;
-
-            color:
-              #C2CCD8 !important;
+            color: #e7ecf1 !important;
 
             font-family:
               Inter,
@@ -1324,56 +773,47 @@
               "Segoe UI",
               sans-serif !important;
 
-            font-size:
-              14px !important;
+            font-size: 14px !important;
 
-            line-height:
-              1.65 !important;
+            line-height: 1.65 !important;
 
-            word-wrap:
-              break-word !important;
+            text-align: left !important;
 
-            overflow-wrap:
-              anywhere !important;
-
+            word-wrap: break-word !important;
+            overflow-wrap: anywhere !important;
           }
 
-
           /*
-           * Basic containers
+           * Force common email containers
+           * away from the old white-email look.
            */
 
           table,
+          tbody,
+          tr,
           td,
-          th,
+          th {
+            background-color:
+              transparent !important;
+
+            color:
+              #e7ecf1 !important;
+          }
+
           div,
           section,
           article,
-          main {
-
-            max-width:
-              100% !important;
-
+          main,
+          header,
+          footer {
+            color:
+              #e7ecf1 !important;
           }
 
-
-          /*
-           * Typography
-           */
-
-          p,
-          span,
-          div,
-          td,
-          th,
-          li,
-          label {
-
-            max-width:
-              100% !important;
-
+          p {
+            margin-top: 0;
+            margin-bottom: 16px;
           }
-
 
           h1,
           h2,
@@ -1381,121 +821,79 @@
           h4,
           h5,
           h6 {
-
             color:
-              #F1F5F9 !important;
+              #f3f6f8 !important;
 
-            line-height:
-              1.3 !important;
+            line-height: 1.3 !important;
 
+            margin-top: 0;
           }
 
+          h1 {
+            font-size: 25px !important;
+          }
 
-          /*
-           * Links
-           */
+          h2 {
+            font-size: 21px !important;
+          }
+
+          h3 {
+            font-size: 18px !important;
+          }
 
           a {
-
             color:
-              #37E29A !important;
+              #37e29a !important;
 
             text-decoration:
-              underline;
+              underline !important;
 
             text-decoration-color:
-              rgba(
-                55,
-                226,
-                154,
-                0.35
-              );
-
-            text-underline-offset:
-              2px;
-
+              rgba(55,226,154,.45) !important;
           }
-
 
           a:hover {
-
             color:
-              #7AF2BC !important;
-
+              #6ff0b7 !important;
           }
-
-
-          /*
-           * Images
-           */
 
           img {
+            display: block;
 
-            max-width:
-              100% !important;
+            max-width: 100% !important;
 
-            height:
-              auto !important;
+            width: auto;
 
+            height: auto !important;
+
+            border: 0;
+
+            margin-left: 0 !important;
+            margin-right: 0 !important;
           }
 
-
           /*
-           * Tables
+           * Make large email tables responsive.
            */
 
           table {
-
-            max-width:
-              100% !important;
-
-            width:
-              auto;
-
+            max-width: 100% !important;
           }
 
-
-          td {
-
-            max-width:
-              100% !important;
-
+          td,
+          th {
+            max-width: 100% !important;
           }
-
-
-          /*
-           * Code
-           */
-
-          pre,
-          code {
-
-            font-family:
-              "JetBrains Mono",
-              ui-monospace,
-              SFMono-Regular,
-              Menlo,
-              monospace !important;
-
-          }
-
 
           pre {
-
-            white-space:
-              pre-wrap !important;
-
-            word-break:
-              break-word !important;
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
 
             background:
-              #080B10 !important;
-
-            color:
-              #C2CCD8 !important;
+              #10151d !important;
 
             border:
-              1px solid #2A3341 !important;
+              1px solid #1d2430 !important;
 
             border-radius:
               10px !important;
@@ -1503,109 +901,68 @@
             padding:
               14px !important;
 
-            overflow-x:
-              auto !important;
+            color:
+              #c2ccd8 !important;
 
+            overflow-x: auto !important;
           }
-
 
           code {
-
             background:
-              #080B10 !important;
+              #151b25 !important;
 
             color:
-              #37E29A !important;
-
-            border-radius:
-              5px;
+              #8a8cf0 !important;
 
             padding:
-              2px 5px;
+              2px 5px !important;
 
+            border-radius:
+              5px !important;
           }
-
-
-          /*
-           * Quotes
-           */
 
           blockquote {
+            margin:
+              16px 0 !important;
 
-            margin-left:
-              0 !important;
+            padding:
+              10px 16px !important;
 
             border-left:
-              3px solid #37E29A !important;
+              3px solid #37e29a !important;
 
-            padding-left:
-              14px !important;
+            background:
+              #10151d !important;
 
             color:
-              #94A3B5 !important;
-
+              #c2ccd8 !important;
           }
 
-
-          /*
-           * Separators
-           */
-
           hr {
-
-            border:
-              0 !important;
+            border: 0 !important;
 
             border-top:
-              1px solid #2A3341 !important;
+              1px solid #1d2430 !important;
 
             margin:
               22px 0 !important;
-
           }
 
-
-          /*
-           * Forms
-           */
-
-          input,
-          textarea,
-          select,
-          button {
-
-            max-width:
-              100% !important;
-
-            background:
-              #151B25 !important;
-
-            color:
-              #E7ECF1 !important;
-
-            border:
-              1px solid #2A3341 !important;
-
-            border-radius:
-              7px !important;
-
+          ul,
+          ol {
+            padding-left:
+              22px !important;
           }
 
+          li {
+            margin-bottom:
+              5px !important;
+          }
 
-          /*
-           * Plain-text email
-           */
+          /* Plain text emails */
 
-          .plain-message {
-
-            white-space:
-              pre-wrap;
-
-            word-break:
-              break-word;
-
-            color:
-              #C2CCD8;
+          .plain-text {
+            white-space: pre-wrap;
 
             font-family:
               "JetBrains Mono",
@@ -1613,40 +970,53 @@
               SFMono-Regular,
               monospace;
 
-            font-size:
-              13px;
+            font-size: 13px;
 
-            line-height:
-              1.7;
+            line-height: 1.7;
 
-            background:
-              #0C1017;
+            color: #c2ccd8;
 
-            border:
-              1px solid #2A3341;
-
-            border-radius:
-              12px;
-
-            padding:
-              18px;
-
+            text-align: left;
           }
 
-
           /*
-           * Mobile
+           * Remove old email background colours
+           * from inline HTML attributes.
            */
 
-          @media (
-            max-width: 640px
-          ) {
+          [bgcolor] {
+            background-color:
+              transparent !important;
+          }
+
+          /*
+           * Keep the email visually contained.
+           */
+
+          body > table:first-child,
+          body > div:first-child {
+            margin-left: 0 !important;
+            margin-right: auto !important;
+          }
+
+          @media (max-width: 640px) {
 
             body {
-
               padding:
                 18px !important;
 
+              font-size:
+                14px !important;
+            }
+
+            img {
+              max-width:
+                100% !important;
+            }
+
+            table {
+              width:
+                100% !important;
             }
 
           }
@@ -1655,134 +1025,123 @@
 
       </head>
 
-
       <body>
 
-        ${body}
+        ${safeHtml}
 
       </body>
 
       </html>
-
     `;
-
   }
 
+  // ------------------------------------------------------------------------
+  // Viewer
+  // ------------------------------------------------------------------------
 
-  /* =========================================================================
-     OPEN MESSAGE
-     ========================================================================= */
+  function resetViewer() {
+    state.activeMessageId = null;
 
-  async function openMessage(
-    id
-  ) {
+    el.viewerContent?.classList.add(
+      'hidden'
+    );
 
-    state.activeMessageId =
-      id;
+    el.viewerContent?.classList.remove(
+      'mobile-open'
+    );
 
+    el.viewerEmpty?.classList.remove(
+      'hidden'
+    );
+
+    if (el.viewerFrame) {
+      el.viewerFrame.srcdoc = '';
+    }
+
+    if (el.viewerAttachments) {
+      el.viewerAttachments.innerHTML =
+        '';
+
+      el.viewerAttachments.classList.add(
+        'hidden'
+      );
+    }
+  }
+
+  async function openMessage(id) {
+    state.activeMessageId = id;
 
     renderInbox();
-
 
     el.viewerEmpty?.classList.add(
       'hidden'
     );
 
-
     el.viewerContent?.classList.remove(
       'hidden'
     );
-
 
     el.viewerContent?.classList.add(
       'mobile-open'
     );
 
-
     el.viewerSubject.textContent =
       'Loading message…';
 
+    el.viewerFrom.textContent = '';
+    el.viewerDate.textContent = '';
 
-    el.viewerFrom.textContent =
-      '';
-
-
-    el.viewerDate.textContent =
-      '';
-
-
-    el.viewerAttachments.innerHTML =
-      '';
-
+    el.viewerAttachments.innerHTML = '';
 
     el.viewerAttachments.classList.add(
       'hidden'
     );
 
-
     /*
-     * Completely sandbox the email.
+     * Empty sandbox:
+     *
+     * No scripts.
+     * No forms.
+     * No top navigation.
      */
-
     el.viewerFrame.setAttribute(
       'sandbox',
       ''
     );
 
-
-    el.viewerFrame.className =
-      'viewer-frame';
-
-
     el.viewerFrame.srcdoc = `
-
       <!doctype html>
 
       <html>
 
-      <body style="
-        margin:0;
-        min-height:420px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        background:#10151D;
-        color:#6B7A8D;
-        font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-        font-size:13px;
-      ">
+        <body style="
+          margin:0;
+          padding:28px;
+          background:#0c1017;
+          color:#6b7a8d;
+          font-family:Inter,system-ui,sans-serif;
+        ">
 
-        Loading message…
+          Loading message…
 
-      </body>
+        </body>
 
       </html>
-
     `;
 
-
     try {
-
       const message =
-        await fetchMessage(
-          id
-        );
-
+        await fetchMessage(id);
 
       if (
-        state.activeMessageId !==
-        id
+        state.activeMessageId !== id
       ) {
-
         return;
-
       }
-
 
       el.viewerSubject.textContent =
         message.subject ||
         '(no subject)';
-
 
       el.viewerFrom.textContent =
         message.fromName
@@ -1790,35 +1149,23 @@
           : message.from ||
             'Unknown sender';
 
-
       el.viewerDate.textContent =
-        formatDate(
-          message.date
-        );
-
+        formatDate(message.date);
 
       const html =
-        Array.isArray(
-          message.html
-        )
-          ? message.html.join(
-              ''
-            )
+        Array.isArray(message.html)
+          ? message.html.join('')
           : message.html;
 
-
       el.viewerFrame.srcdoc =
-        buildSafeMessageDocument(
+        buildDarkEmailDocument(
           html,
           message.text
         );
 
-
       renderAttachments(
-        message.attachments ||
-          []
+        message.attachments || []
       );
-
 
       renderIcons();
 
@@ -1827,116 +1174,75 @@
       el.viewerSubject.textContent =
         'Could not load this message';
 
-
       el.viewerFrame.srcdoc = `
-
         <!doctype html>
 
         <html>
 
-        <body style="
-          margin:0;
-          min-height:420px;
-          padding:28px;
-          background:#10151D;
-          color:#FCA5A5;
-          font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-          font-size:13px;
-          line-height:1.6;
-        ">
-
-          <strong>
-            Could not load this message
-          </strong>
-
-          <p style="
-            color:#94A3B5;
-            margin-top:8px;
+          <body style="
+            margin:0;
+            padding:28px;
+            background:#0c1017;
+            color:#fca5a5;
+            font-family:Inter,system-ui,sans-serif;
           ">
+
             ${escapeHtml(
               error.message ||
-                'Something went wrong.'
+              'Something went wrong.'
             )}
-          </p>
 
-        </body>
+          </body>
 
         </html>
-
       `;
-
 
       showToast(
         error.message ||
-          'Could not load this message.',
+        'Could not load this message.',
         'error'
       );
-
     }
-
   }
 
-
-  /* =========================================================================
-     ATTACHMENTS
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Attachments
+  // ------------------------------------------------------------------------
 
   function renderAttachments(
     attachments
   ) {
-
-    if (
-      !el.viewerAttachments
-    ) {
+    if (!el.viewerAttachments) {
       return;
     }
-
 
     el.viewerAttachments.innerHTML =
       '';
 
-
-    if (
-      !Array.isArray(
-        attachments
-      ) ||
-      !attachments.length
-    ) {
-
+    if (!attachments.length) {
       el.viewerAttachments.classList.add(
         'hidden'
       );
 
       return;
-
     }
-
 
     el.viewerAttachments.classList.remove(
       'hidden'
     );
 
-
     attachments.forEach(
       (attachment) => {
-
         const item =
-          document.createElement(
-            'div'
-          );
+          document.createElement('div');
 
+        const downloadable =
+          attachment.downloadable === true;
 
         item.className =
           'attachment-chip';
 
-
-        const downloadable =
-          attachment.downloadable ===
-          true;
-
-
         item.innerHTML = `
-
           <i
             data-lucide="paperclip"
             style="width:13px;height:13px"
@@ -1945,97 +1251,64 @@
           <span>
             ${escapeHtml(
               attachment.filename ||
-                'attachment'
+              'attachment'
             )}
           </span>
 
-          <span class="text-ink-500">
-
+          <span class="attachment-status">
             ${
               downloadable
                 ? 'available'
                 : 'not downloadable'
             }
-
           </span>
-
         `;
-
 
         el.viewerAttachments.appendChild(
           item
         );
-
       }
     );
 
-
     renderIcons();
-
   }
 
+  // ------------------------------------------------------------------------
+  // Refresh
+  // ------------------------------------------------------------------------
 
-  /* =========================================================================
-     REFRESH MESSAGES
-     ========================================================================= */
-
-  async function refreshMessages(
-    {
-      silent = false,
-    } = {}
-  ) {
-
+  async function refreshMessages({
+    silent = false,
+  } = {}) {
     if (
       !state.account ||
       state.isFetchingList
     ) {
-
       return;
-
     }
 
-
-    state.isFetchingList =
-      true;
-
+    state.isFetchingList = true;
 
     if (!silent) {
-
-      spin(
-        el.btnRefresh,
-        true
-      );
-
+      spin(el.btnRefresh, true);
     }
 
-
     try {
-
       const messages =
         await fetchMessages();
 
-
-      if (
-        !Array.isArray(
-          messages
-        )
-      ) {
-
+      if (!Array.isArray(messages)) {
         throw new Error(
           'The inbox returned an invalid response.'
         );
-
       }
-
 
       const previousIds =
         new Set(
           state.messages.map(
-            (message) =>
-              message.id
+            (message) => message.id
           )
         );
-
 
       const hasNewMail =
         messages.some(
@@ -2045,63 +1318,44 @@
             )
         );
 
-
-      state.messages =
-        messages;
-
+      state.messages = messages;
 
       renderInbox();
-
 
       if (
         hasNewMail &&
         previousIds.size > 0
       ) {
-
         showToast(
           'New mail just arrived.'
         );
-
       }
 
     } catch (error) {
 
       if (!silent) {
-
         showToast(
           error.message ||
-            'Could not refresh the inbox.',
+          'Could not refresh the inbox.',
           'error'
         );
-
       }
 
     } finally {
 
-      state.isFetchingList =
-        false;
-
+      state.isFetchingList = false;
 
       if (!silent) {
-
-        spin(
-          el.btnRefresh,
-          false
-        );
-
+        spin(el.btnRefresh, false);
       }
-
     }
-
   }
 
-
-  /* =========================================================================
-     POLLING
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Polling
+  // ------------------------------------------------------------------------
 
   function stopPolling() {
-
     clearInterval(
       state.pollTimer
     );
@@ -2110,185 +1364,114 @@
       state.countdownTimer
     );
 
-
-    state.pollTimer =
-      null;
-
-    state.countdownTimer =
-      null;
-
+    state.pollTimer = null;
+    state.countdownTimer = null;
   }
-
 
   function startPolling() {
-
     stopPolling();
 
-
-    state.msRemaining =
-      POLL_MS;
-
+    state.msRemaining = POLL_MS;
 
     state.pollTimer =
-      setInterval(
-        () => {
+      setInterval(() => {
 
-          state.msRemaining =
-            POLL_MS;
+        state.msRemaining =
+          POLL_MS;
 
+        refreshMessages({
+          silent: true,
+        });
 
-          refreshMessages({
-            silent: true,
-          });
-
-        },
-        POLL_MS
-      );
-
+      }, POLL_MS);
 
     state.countdownTimer =
-      setInterval(
-        () => {
+      setInterval(() => {
 
-          state.msRemaining =
-            Math.max(
-              0,
-              state.msRemaining -
-                100
-            );
+        state.msRemaining =
+          Math.max(
+            0,
+            state.msRemaining - 100
+          );
 
+        const percentage =
+          100 -
+          (
+            state.msRemaining /
+            POLL_MS
+          ) *
+            100;
 
-          const percentage =
-            100 -
-            (
-              state.msRemaining /
-              POLL_MS
-            ) *
-              100;
+        if (el.pollBar) {
+          el.pollBar.style.width =
+            `${percentage}%`;
+        }
 
+        if (el.pollLabel) {
+          el.pollLabel.textContent =
+            `next check ${Math.ceil(
+              state.msRemaining / 1000
+            )}s`;
+        }
 
-          if (
-            el.pollBar
-          ) {
-
-            el.pollBar.style.width =
-              `${percentage}%`;
-
-          }
-
-
-          if (
-            el.pollLabel
-          ) {
-
-            el.pollLabel.textContent =
-              `next check ${Math.ceil(
-                state.msRemaining /
-                  1000
-              )}s`;
-
-          }
-
-        },
-        100
-      );
-
+      }, 100);
   }
 
-
-  /* =========================================================================
-     ACTIVATE INBOX
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Activate inbox
+  // ------------------------------------------------------------------------
 
   async function activateInbox(
     account,
     announce = true
   ) {
-
     stopPolling();
 
-
-    state.account =
-      account;
-
-
-    state.messages =
-      [];
-
-
-    state.activeMessageId =
-      null;
-
+    state.account = account;
+    state.messages = [];
+    state.activeMessageId = null;
 
     saveAccount();
-
 
     el.addressText.textContent =
       account.address;
 
+    setAddressLoading(false);
 
-    setAddressLoading(
-      false
-    );
-
-
-    if (
-      el.expiryNote
-    ) {
-
+    if (el.expiryNote) {
       el.expiryNote.textContent =
         'Messages expire after about 24 hours';
-
     }
 
-
     resetViewer();
-
 
     await refreshMessages({
       silent: true,
     });
 
-
     startPolling();
 
-
     if (announce) {
-
       showToast(
         'New address ready.'
       );
-
     }
-
   }
 
-
-  /* =========================================================================
-     COPY
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Copy
+  // ------------------------------------------------------------------------
 
   async function copyAddress() {
-
-    if (
-      !state.account
-    ) {
-
-      return;
-
-    }
-
+    if (!state.account) return;
 
     const address =
       state.account.address;
 
-
     try {
-
       await navigator.clipboard.writeText(
         address
       );
-
     } catch {
 
       const textarea =
@@ -2296,135 +1479,76 @@
           'textarea'
         );
 
-
-      textarea.value =
-        address;
-
+      textarea.value = address;
 
       textarea.style.position =
         'fixed';
 
-
       textarea.style.opacity =
         '0';
-
 
       document.body.appendChild(
         textarea
       );
 
-
       textarea.select();
 
-
       try {
-
         document.execCommand(
           'copy'
         );
-
-      } catch {
-
-        // Ignore fallback failure.
-
-      }
-
+      } catch {}
 
       textarea.remove();
-
     }
 
-
-    if (
-      el.copyTooltip
-    ) {
-
+    if (el.copyTooltip) {
       el.copyTooltip.classList.add(
         'show'
       );
 
-
-      setTimeout(
-        () => {
-
-          el.copyTooltip.classList.remove(
-            'show'
-          );
-
-        },
-        1500
-      );
-
+      setTimeout(() => {
+        el.copyTooltip.classList.remove(
+          'show'
+        );
+      }, 1500);
     }
 
-
-    if (
-      el.addressBox
-    ) {
-
+    if (el.addressBox) {
       el.addressBox.classList.add(
         'flash-copied'
       );
 
-
-      setTimeout(
-        () => {
-
-          el.addressBox.classList.remove(
-            'flash-copied'
-          );
-
-        },
-        1500
-      );
-
+      setTimeout(() => {
+        el.addressBox.classList.remove(
+          'flash-copied'
+        );
+      }, 1500);
     }
-
   }
 
-
-  /* =========================================================================
-     RANDOM ADDRESS
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Random address
+  // ------------------------------------------------------------------------
 
   async function newRandomAddress() {
-
-    if (
-      state.isBusy
-    ) {
-
-      return;
-
-    }
-
+    if (state.isBusy) return;
 
     setBusy(true);
 
+    spin(el.btnRandom, true);
 
-    spin(
-      el.btnRandom,
-      true
-    );
-
-
-    setAddressLoading(
-      true
-    );
-
+    setAddressLoading(true);
 
     el.addressText.textContent =
       'generating…';
-
 
     try {
 
       const account =
         await createRandomInbox();
 
-
-      await activateInbox(
-        account
-      );
+      await activateInbox(account);
 
     } catch (error) {
 
@@ -2432,15 +1556,11 @@
         state.account?.address ||
         'unavailable';
 
-
-      setAddressLoading(
-        false
-      );
-
+      setAddressLoading(false);
 
       showToast(
         error.message ||
-          'Could not create an inbox.',
+        'Could not create an inbox.',
         'error'
       );
 
@@ -2448,50 +1568,29 @@
 
       setBusy(false);
 
-
-      spin(
-        el.btnRandom,
-        false
-      );
-
+      spin(el.btnRandom, false);
     }
-
   }
 
-
-  /* =========================================================================
-     CUSTOM ADDRESS
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Custom address
+  // ------------------------------------------------------------------------
 
   async function createCustomAddress() {
-
-    if (
-      state.isBusy
-    ) {
-
-      return;
-
-    }
-
+    if (state.isBusy) return;
 
     const login =
-      el.inputPrefix?.value ||
-      '';
-
+      el.inputPrefix?.value || '';
 
     const domain =
-      el.selectDomain?.value ||
-      '';
-
+      el.selectDomain?.value || '';
 
     setBusy(true);
-
 
     spin(
       el.btnCreateCustom,
       true
     );
-
 
     try {
 
@@ -2501,26 +1600,17 @@
           domain
         );
 
+      await activateInbox(account);
 
-      await activateInbox(
-        account
-      );
-
-
-      if (
-        el.inputPrefix
-      ) {
-
-        el.inputPrefix.value =
-          '';
-
+      if (el.inputPrefix) {
+        el.inputPrefix.value = '';
       }
 
     } catch (error) {
 
       showToast(
         error.message ||
-          'Could not create that address.',
+        'Could not create that address.',
         'error'
       );
 
@@ -2528,76 +1618,53 @@
 
       setBusy(false);
 
-
       spin(
         el.btnCreateCustom,
         false
       );
-
     }
-
   }
 
-
-  /* =========================================================================
-     DELETE
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Delete
+  // ------------------------------------------------------------------------
 
   async function deleteCurrentInbox() {
-
     if (
       state.isBusy ||
       !state.account
     ) {
-
       return;
-
     }
 
-
     setBusy(true);
-
 
     spin(
       el.btnDelete,
       true
     );
 
-
     try {
 
       await deleteInbox();
 
-
       stopPolling();
-
 
       localStorage.removeItem(
         STORAGE_KEY
       );
 
-
-      state.account =
-        null;
-
-
-      state.messages =
-        [];
-
-
-      state.activeMessageId =
-        null;
-
+      state.account = null;
+      state.messages = [];
+      state.activeMessageId = null;
 
       const replacement =
         await createRandomInbox();
-
 
       await activateInbox(
         replacement,
         false
       );
-
 
       showToast(
         'Inbox deleted — new address ready.'
@@ -2607,54 +1674,41 @@
 
       showToast(
         error.message ||
-          'Could not replace this inbox.',
+        'Could not replace this inbox.',
         'error'
       );
 
-
-      if (
-        state.account
-      ) {
-
+      if (state.account) {
         startPolling();
-
       }
 
     } finally {
 
       setBusy(false);
 
-
       spin(
         el.btnDelete,
         false
       );
-
     }
-
   }
 
-
-  /* =========================================================================
-     MANUAL REFRESH
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Manual refresh
+  // ------------------------------------------------------------------------
 
   async function manualRefresh() {
-
     state.msRemaining =
       POLL_MS;
-
 
     await refreshMessages({
       silent: false,
     });
-
   }
 
-
-  /* =========================================================================
-     EVENTS
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Events
+  // ------------------------------------------------------------------------
 
   function bindEvents() {
 
@@ -2663,41 +1717,31 @@
       copyAddress
     );
 
-
     el.btnRefresh?.addEventListener(
       'click',
       manualRefresh
     );
-
 
     el.btnRandom?.addEventListener(
       'click',
       newRandomAddress
     );
 
-
     el.btnCreateCustom?.addEventListener(
       'click',
       createCustomAddress
     );
 
-
     el.inputPrefix?.addEventListener(
       'keydown',
       (event) => {
 
-        if (
-          event.key ===
-          'Enter'
-        ) {
-
+        if (event.key === 'Enter') {
           createCustomAddress();
-
         }
 
       }
     );
-
 
     el.btnDelete?.addEventListener(
       'click',
@@ -2708,45 +1752,35 @@
             'Delete this inbox? All messages in it will be permanently removed.'
           );
 
-
         if (confirmed) {
-
           deleteCurrentInbox();
-
         }
 
       }
     );
 
-
     el.btnCloseViewer?.addEventListener(
       'click',
       () => {
 
-        state.activeMessageId =
-          null;
-
+        state.activeMessageId = null;
 
         el.viewerContent?.classList.remove(
           'mobile-open'
         );
 
-
         el.viewerContent?.classList.add(
           'hidden'
         );
-
 
         el.viewerEmpty?.classList.remove(
           'hidden'
         );
 
-
         renderInbox();
 
       }
     );
-
 
     document.addEventListener(
       'visibilitychange',
@@ -2766,58 +1800,35 @@
 
       }
     );
-
   }
 
-
-  /* =========================================================================
-     BOOT
-     ========================================================================= */
+  // ------------------------------------------------------------------------
+  // Boot
+  // ------------------------------------------------------------------------
 
   async function boot() {
 
     renderIcons();
 
-
     bindEvents();
 
-
-    setAddressLoading(
-      true
-    );
-
-
-    /*
-     * Load available domains.
-     */
+    setAddressLoading(true);
 
     const domainsReady =
       await loadDomains();
 
-
     if (!domainsReady) {
 
-      setAddressLoading(
-        false
-      );
-
+      setAddressLoading(false);
 
       el.addressText.textContent =
         'unavailable';
 
-
       return;
-
     }
-
-
-    /*
-     * Restore existing inbox.
-     */
 
     const saved =
       loadAccount();
-
 
     if (saved) {
 
@@ -2828,11 +1839,9 @@
           false
         );
 
-
         showToast(
           'Welcome back — inbox restored.'
         );
-
 
         return;
 
@@ -2841,21 +1850,13 @@
         localStorage.removeItem(
           STORAGE_KEY
         );
-
       }
-
     }
-
-
-    /*
-     * Create new inbox.
-     */
 
     try {
 
       const account =
         await createRandomInbox();
-
 
       await activateInbox(
         account,
@@ -2864,29 +1865,18 @@
 
     } catch (error) {
 
-      setAddressLoading(
-        false
-      );
-
+      setAddressLoading(false);
 
       el.addressText.textContent =
         'unavailable';
 
-
       showToast(
         error.message ||
-          'Could not create a temporary inbox.',
+        'Could not create a temporary inbox.',
         'error'
       );
-
     }
-
   }
-
-
-  /* =========================================================================
-     START
-     ========================================================================= */
 
   document.addEventListener(
     'DOMContentLoaded',
