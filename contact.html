@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Contact — VanishTemp</title>
+  <meta
+    name="description"
+    content="Contact the VanishTemp team for support, security concerns, abuse reports, or general enquiries."
+  />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            ink: {
+              950: '#080B10',
+              900: '#0C1017',
+              850: '#10151D',
+              800: '#151B25',
+              700: '#1D2430',
+              600: '#2A3341',
+              500: '#3E4B5C',
+              400: '#6B7A8D',
+              300: '#94A3B5',
+              200: '#C2CCD8',
+              100: '#E7ECF1',
+            },
+            signal: {
+              DEFAULT: '#37E29A',
+              dim: '#1F8A5C',
+            },
+            violet: {
+              DEFAULT: '#8A8CF0',
+              dim: '#5457B8',
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
+
+  <header class="border-b border-ink-800/80">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+
+      <a href="index.html" class="flex items-center gap-2.5">
+        <div class="h-8 w-8 rounded-lg bg-ink-850 border border-ink-700 flex items-center justify-center">
+          <span class="text-signal text-lg">◉</span>
+        </div>
+
+        <span class="font-semibold text-[15px] tracking-tight">
+          Vanish<span class="text-signal">.</span>
+        </span>
+      </a>
+
+      <a
+        href="index.html"
+        class="text-xs text-ink-400 hover:text-ink-100 transition-colors"
+      >
+        ← Back to Vanish
+      </a>
+
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+
+    <div class="mb-10">
+      <p class="text-xs uppercase tracking-widest text-signal font-medium">
+        Support
+      </p>
+
+      <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight">
+        Contact VanishTemp
+      </h1>
+
+      <p class="mt-3 text-sm text-ink-400">
+        Need help, want to report a problem, or have a question?
+      </p>
+    </div>
+
+    <div class="grid gap-5">
+
+      <div class="rounded-2xl border border-ink-700 bg-ink-900/60 p-6">
+
+        <div class="flex items-center gap-3 mb-4">
+          <div class="h-10 w-10 rounded-xl bg-signal/10 border border-signal/20 flex items-center justify-center">
+            <span class="text-signal">✉</span>
+          </div>
+
+          <div>
+            <h2 class="font-semibold text-ink-100">
+              General support
+            </h2>
+
+            <p class="text-xs text-ink-500">
+              Questions about using VanishTemp
+            </p>
+          </div>
+        </div>
+
+        <a
+          href="mailto:support@vanishtemp.com"
+          class="inline-flex items-center rounded-xl border border-ink-700 bg-ink-950/70 px-4 py-3 text-sm font-mono text-signal hover:bg-ink-800 transition-colors"
+        >
+          support@vanishtemp.com
+        </a>
+
+      </div>
+
+      <div class="rounded-2xl border border-ink-700 bg-ink-900/60 p-6">
+
+        <h2 class="font-semibold text-ink-100 mb-3">
+          What can we help with?
+        </h2>
+
+        <ul class="space-y-2 text-sm text-ink-400">
+          <li>• Problems generating a temporary address</li>
+          <li>• Problems receiving email</li>
+          <li>• Website bugs or technical issues</li>
+          <li>• Privacy questions</li>
+          <li>• Security concerns</li>
+          <li>• Abuse or malicious activity reports</li>
+        </ul>
+
+      </div>
+
+      <div class="rounded-2xl border border-ink-700 bg-ink-900/60 p-6">
+
+        <h2 class="font-semibold text-ink-100 mb-3">
+          Important
+        </h2>
+
+        <p class="text-sm leading-6 text-ink-400">
+          VanishTemp provides temporary email addresses and does not provide
+          account recovery services for third-party websites. Do not send
+          passwords, banking information, recovery codes, or other sensitive
+          information to us.
+        </p>
+
+      </div>
+
+      <div class="rounded-2xl border border-ink-700 bg-ink-900/60 p-6">
+
+        <h2 class="font-semibold text-ink-100 mb-3">
+          Response time
+        </h2>
+
+        <p class="text-sm leading-6 text-ink-400">
+          We aim to respond to legitimate support and security enquiries as
+          soon as reasonably possible. Please include enough information for
+          us to understand the issue without sending passwords or other
+          sensitive information.
+        </p>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="border-t border-ink-800/80 mt-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6 text-center text-xs text-ink-500">
+      © 2026 VanishTemp. All rights reserved.
+    </div>
+  </footer>
+
+</body>
+</html>
