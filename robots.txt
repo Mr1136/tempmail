@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vanishmail.com/sitemap.xml
+Sitemap: https://vanishtemp.com/sitemap.xml
