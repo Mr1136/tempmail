@@ -1,17 +1,1 @@
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
-
-<link
-  rel="apple-touch-icon"
-  sizes="180x180"
-  href="./apple-touch-icon.png"
->
-
-<meta
-  name="apple-mobile-web-app-title"
-  content="Vanish"
->
-
-<meta
-  name="theme-color"
-  content="#080B10"
->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#37E29A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v10a2 2 0 0 0 3.414 1.414L9 19.828l2.586 2.586a2 2 0 0 0 2.828 0L17 19.828l1.586 1.586A2 2 0 0 0 22 20V10a8 8 0 0 0-8-8h-2z"/></svg>
