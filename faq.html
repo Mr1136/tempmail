@@ -7,6 +7,67 @@
   <title>FAQ — Vanish Temporary Email</title>
   <meta name="description" content="Frequently asked questions about Vanish temporary email.">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        },
+        colors: {
+          ink: {
+            950: '#080B10',
+            900: '#0C1017',
+            850: '#10151D',
+            800: '#151B25',
+            700: '#1D2430',
+            600: '#2A3341',
+            500: '#3E4B5C',
+            400: '#6B7A8D',
+            300: '#94A3B5',
+            200: '#C2CCD8',
+            100: '#E7ECF1',
+          },
+          signal: {
+            DEFAULT: '#37E29A',
+            dim: '#1F8A5C',
+            glow: '#37E29A33',
+          },
+          violet: {
+            DEFAULT: '#8A8CF0',
+            dim: '#5457B8',
+          },
+        },
+        boxShadow: {
+          'glow-signal': '0 0 0 1px rgba(55,226,154,0.25), 0 8px 30px -8px rgba(55,226,154,0.35)',
+          'card': '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 30px -18px rgba(0,0,0,0.6)',
+        },
+        keyframes: {
+          blink: { '0%, 45%': { opacity: 1 }, '50%, 95%': { opacity: 0 }, '100%': { opacity: 1 } },
+          'pulse-ring': { '0%': { boxShadow: '0 0 0 0 rgba(55,226,154,0.45)' }, '100%': { boxShadow: '0 0 0 8px rgba(55,226,154,0)' } },
+          'fade-in-up': { '0%': { opacity: 0, transform: 'translateY(6px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+          shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+        },
+        animation: {
+          blink: 'blink 1.2s step-end infinite',
+          'pulse-ring': 'pulse-ring 1.6s cubic-bezier(0.4,0,0.6,1) infinite',
+          'fade-in-up': 'fade-in-up 0.35s ease-out both',
+          shimmer: 'shimmer 2s linear infinite',
+        },
+      },
+    },
+  };
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 
