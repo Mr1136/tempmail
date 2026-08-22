@@ -1,205 +1,264 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Email for Website Testing — Temporary Test Inbox | Vanish</title>
+  <title>Temporary Email for Website Testing | Vanish</title>
 
-<meta name="description"
-content="Need an email for website testing? Use a temporary Vanish inbox to test registration flows, confirmation emails and email delivery without using your personal address.">
+  <meta
+    name="description"
+    content="Use temporary email addresses for website testing. Test signup forms, verification emails and registration flows without repeatedly using personal email addresses."
+  />
 
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#080B10">
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#080B10" />
+  <meta name="color-scheme" content="dark" />
 
-<link rel="canonical" href="https://vanishtemp.com/seo/email-for-website-testing.html">
+  <link rel="canonical" href="https://vanishtemp.com/email-for-website-testing.html" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="alternate icon" href="./favicon.ico" />
 
-<meta property="og:title" content="Email for Website Testing — Temporary Test Inbox | Vanish">
-<meta property="og:description" content="Use a temporary email inbox to test website registration and email delivery.">
-<meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="../styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7NG3WYST14"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-7NG3WYST14');
-</script>
+  <script>
+    tailwind.config={
+      darkMode:"class",
+      theme:{
+        extend:{
+          fontFamily:{
+            sans:["Inter","ui-sans-serif","system-ui","sans-serif"],
+            mono:['"JetBrains Mono"',"ui-monospace","SFMono-Regular","monospace"]
+          },
+          colors:{
+            ink:{
+              950:"#080B10",900:"#0C1017",850:"#10151D",800:"#151B25",
+              700:"#1D2430",600:"#2A3341",500:"#3E4B5C",400:"#6B7A8D",
+              300:"#94A3B5",200:"#C2CCD8",100:"#E7ECF1"
+            },
+            signal:{DEFAULT:"#37E29A",dim:"#1F8A5C",glow:"#37E29A33"},
+            violet:{DEFAULT:"#8A8CF0",dim:"#5457B8"}
+          },
+          boxShadow:{
+            "glow-signal":"0 0 0 1px rgba(55,226,154,0.25),0 8px 30px -8px rgba(55,226,154,0.35)",
+            card:"0 1px 0 0 rgba(255,255,255,0.04) inset,0 12px 30px -18px rgba(0,0,0,0.6)"
+          }
+        }
+      }
+    };
+  </script>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="./styles.css" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7NG3WYST14"></script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js",new Date());
+    gtag("config","G-7NG3WYST14");
+  </script>
 </head>
 
-<body class="bg-ink-950 text-ink-100 font-sans antialiased">
+<body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
 
-<header class="border-b border-ink-800">
-<div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-<a href="../index.html" class="font-semibold text-lg">
-Vanish<span class="text-signal">.</span>
-</a>
-<a href="../index.html" class="bg-signal text-ink-950 rounded-xl px-4 py-2 text-sm font-semibold">
-Create test inbox
-</a>
-</div>
-</header>
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 h-[560px] w-[900px] rounded-full bg-signal/[0.06] blur-[120px]"></div>
+    <div class="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full bg-violet/[0.08] blur-[110px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.035)_1px,transparent_0)] bg-[size:26px_26px]"></div>
+  </div>
 
-<main>
+  <header class="border-b border-ink-800/80 bg-ink-950/70 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
-<section class="max-w-4xl mx-auto px-4 pt-16 pb-12">
+      <a href="./index.html" class="flex items-center gap-2.5">
+        <div class="h-8 w-8 rounded-lg bg-ink-850 border border-ink-700 flex items-center justify-center">
+          <i data-lucide="ghost" class="text-signal" style="width:18px;height:18px"></i>
+        </div>
+        <span class="font-semibold text-[15px] tracking-tight">Vanish<span class="text-signal">.</span></span>
+      </a>
 
-<div class="text-center">
+      <a href="./index.html" class="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 bg-signal text-ink-950 text-xs font-semibold hover:bg-emerald-300 transition-all shadow-glow-signal">
+        <i data-lucide="mail-plus" class="h-4 w-4"></i>
+        Start testing
+      </a>
 
-<span class="text-xs uppercase tracking-[0.2em] text-signal font-semibold">
-Website testing
-</span>
+    </div>
+  </header>
 
-<h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight">
-Temporary email for website testing
-</h1>
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
 
-<p class="mt-5 text-lg leading-8 text-ink-400 max-w-2xl mx-auto">
-Test registration forms, confirmation emails and basic email
-delivery without repeatedly using your personal inbox.
-</p>
+    <div class="text-center mb-10">
 
-<a href="../index.html"
-class="inline-flex mt-8 bg-signal text-ink-950 rounded-xl px-6 py-3 font-semibold">
-Create a test inbox
-</a>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full border border-ink-800 bg-ink-900/60 text-[11px] uppercase tracking-widest text-ink-400">
+        <span class="h-1.5 w-1.5 rounded-full bg-signal animate-pulse"></span>
+        Website testing
+      </div>
 
-</div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-ink-100">
+        Temporary email for
+        <span class="text-signal">website testing.</span>
+      </h1>
 
-</section>
+      <p class="mt-4 max-w-2xl mx-auto text-ink-400 text-[15px] sm:text-base leading-7">
+        Test registration forms, verification emails and signup flows
+        without repeatedly entering your personal email address.
+      </p>
 
-<section class="max-w-4xl mx-auto px-4 pb-16">
+      <a href="./index.html" class="mt-7 inline-flex items-center gap-2 rounded-xl px-5 py-3 bg-signal text-ink-950 font-semibold text-sm hover:bg-emerald-300 transition-all shadow-glow-signal">
+        <i data-lucide="code-2" class="h-4 w-4"></i>
+        Generate a testing address
+      </a>
 
-<div class="rounded-3xl border border-ink-800 bg-ink-900/60 p-7 sm:p-10">
+    </div>
 
-<h2 class="text-2xl font-bold">
-Why use temporary email when testing a website?
-</h2>
+    <article class="rounded-2xl border border-ink-700 bg-ink-900/75 backdrop-blur-xl shadow-card">
 
-<p class="mt-4 text-ink-400 leading-7">
-Website developers and testers often need to check what happens
-when a new user registers. That can involve confirmation emails,
-welcome messages, password-reset flows and other automated messages.
-A temporary inbox provides a separate destination for those tests.
-</p>
+      <div class="p-6 sm:p-8 space-y-8">
 
-<h2 class="mt-10 text-2xl font-bold">
-What can you test?
-</h2>
+        <section>
+          <h2 class="text-xl font-bold">Why use temporary email when testing a website?</h2>
 
-<div class="mt-6 grid sm:grid-cols-2 gap-4">
+          <p class="mt-3 text-sm leading-7 text-ink-300">
+            Website developers frequently need to test what happens after
+            a visitor enters an email address. This can include registration,
+            verification, welcome emails, password reset flows and other
+            automated messages.
+          </p>
 
-<div class="rounded-2xl border border-ink-800 p-5">
-<h3 class="font-semibold">Registration emails</h3>
-<p class="mt-2 text-sm text-ink-500 leading-6">
-Check that registration messages arrive after a new signup.
-</p>
-</div>
+          <p class="mt-3 text-sm leading-7 text-ink-300">
+            A temporary email address provides a convenient inbox for these
+            tests without filling a personal mailbox with development and
+            testing messages.
+          </p>
+        </section>
 
-<div class="rounded-2xl border border-ink-800 p-5">
-<h3 class="font-semibold">Email verification</h3>
-<p class="mt-2 text-sm text-ink-500 leading-6">
-Test whether verification messages reach a real inbox.
-</p>
-</div>
+        <section>
+          <h2 class="text-xl font-bold">Useful testing scenarios</h2>
 
-<div class="rounded-2xl border border-ink-800 p-5">
-<h3 class="font-semibold">Welcome emails</h3>
-<p class="mt-2 text-sm text-ink-500 leading-6">
-Review automated messages generated after registration.
-</p>
-</div>
+          <div class="mt-5 space-y-3">
 
-<div class="rounded-2xl border border-ink-800 p-5">
-<h3 class="font-semibold">Email delivery</h3>
-<p class="mt-2 text-sm text-ink-500 leading-6">
-Confirm that your application sends email to the expected destination.
-</p>
-</div>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <div class="flex gap-3">
+                <i data-lucide="user-plus" class="h-5 w-5 text-signal shrink-0"></i>
+                <div>
+                  <h3 class="font-semibold">Registration forms</h3>
+                  <p class="mt-2 text-sm leading-6 text-ink-400">
+                    Check that a new account can be created and that the expected email is delivered.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-</div>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <div class="flex gap-3">
+                <i data-lucide="badge-check" class="h-5 w-5 text-violet shrink-0"></i>
+                <div>
+                  <h3 class="font-semibold">Email verification</h3>
+                  <p class="mt-2 text-sm leading-6 text-ink-400">
+                    Test whether verification messages are generated and delivered correctly.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-<h2 class="mt-10 text-2xl font-bold">
-Simple website testing workflow
-</h2>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <div class="flex gap-3">
+                <i data-lucide="key-round" class="h-5 w-5 text-signal shrink-0"></i>
+                <div>
+                  <h3 class="font-semibold">Password reset flows</h3>
+                  <p class="mt-2 text-sm leading-6 text-ink-400">
+                    Test reset emails and links without repeatedly using a personal account.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-<ol class="mt-6 space-y-5">
+          </div>
+        </section>
 
-<li>
-<strong class="text-ink-100">1. Create an inbox.</strong>
-<p class="mt-1 text-sm text-ink-500">
-Generate a temporary Vanish email address.
-</p>
-</li>
+        <section>
+          <h2 class="text-xl font-bold">A simple testing workflow</h2>
 
-<li>
-<strong class="text-ink-100">2. Enter the address.</strong>
-<p class="mt-1 text-sm text-ink-500">
-Use it in the registration or email form you're testing.
-</p>
-</li>
+          <div class="mt-5 grid sm:grid-cols-3 gap-4">
 
-<li>
-<strong class="text-ink-100">3. Trigger the email.</strong>
-<p class="mt-1 text-sm text-ink-500">
-Submit the form or perform the action that should generate an email.
-</p>
-</li>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <span class="text-xs font-mono text-signal">01</span>
+              <h3 class="mt-3 font-semibold">Generate</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-400">
+                Create a temporary address with Vanish.
+              </p>
+            </div>
 
-<li>
-<strong class="text-ink-100">4. Inspect the result.</strong>
-<p class="mt-1 text-sm text-ink-500">
-Check whether the expected message arrives in the temporary inbox.
-</p>
-</li>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <span class="text-xs font-mono text-signal">02</span>
+              <h3 class="mt-3 font-semibold">Test</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-400">
+                Enter the address into your site's signup or email form.
+              </p>
+            </div>
 
-</ol>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <span class="text-xs font-mono text-signal">03</span>
+              <h3 class="mt-3 font-semibold">Verify</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-400">
+                Check the temporary inbox for the expected message.
+              </p>
+            </div>
 
-<h2 class="mt-10 text-2xl font-bold">
-When a temporary inbox isn't enough
-</h2>
+          </div>
+        </section>
 
-<p class="mt-4 text-ink-400 leading-7">
-For serious automated testing, development teams may need dedicated
-test mail infrastructure, staging environments or tools specifically
-designed for automated email capture. Vanish is best suited to
-quick manual checks and low-complexity testing.
-</p>
+        <section>
+          <h2 class="text-xl font-bold">Temporary email isn't a complete testing environment</h2>
 
-</div>
+          <p class="mt-3 text-sm leading-7 text-ink-300">
+            For production-quality email testing, developers may also need
+            dedicated test environments, mail sandboxing, automated tests
+            and monitoring. Temporary email is particularly useful for
+            straightforward manual checks and real-world registration flows.
+          </p>
+        </section>
 
-</section>
+        <section class="rounded-xl border border-signal/20 bg-signal/[0.04] p-5">
+          <div class="flex gap-3">
+            <i data-lucide="terminal" class="h-5 w-5 text-signal shrink-0"></i>
+            <div>
+              <h2 class="font-semibold">Ready to test?</h2>
+              <p class="mt-2 text-sm leading-6 text-ink-400">
+                Generate a temporary email address and use it with your
+                website's registration or verification flow.
+              </p>
+            </div>
+          </div>
+        </section>
 
-<section class="max-w-4xl mx-auto px-4 pb-16">
+      </div>
+    </article>
 
-<h2 class="text-2xl font-bold text-center">
-More Vanish resources
-</h2>
+  </main>
 
-<div class="mt-6 grid sm:grid-cols-2 gap-3">
-<a href="temporary-email.html" class="border border-ink-800 rounded-xl p-4">Temporary email</a>
-<a href="disposable-email.html" class="border border-ink-800 rounded-xl p-4">Disposable email</a>
-<a href="temporary-email-address.html" class="border border-ink-800 rounded-xl p-4">Temporary email address</a>
-<a href="temporary-inbox.html" class="border border-ink-800 rounded-xl p-4">Temporary inbox</a>
-<a href="free-temporary-email.html" class="border border-ink-800 rounded-xl p-4">Free temporary email</a>
-<a href="10-minute-mail.html" class="border border-ink-800 rounded-xl p-4">10 minute mail</a>
-</div>
+  <footer class="border-t border-ink-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span class="text-xs text-ink-500">© 2026 Vanish.</span>
+      <div class="flex flex-wrap justify-center gap-5 text-xs text-ink-500">
+        <a href="./about.html">About</a>
+        <a href="./how-it-works.html">How it works</a>
+        <a href="./faq.html">FAQ</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
 
-</section>
-
-</main>
-
-<footer class="border-t border-ink-800">
-<div class="max-w-6xl mx-auto px-4 py-8 text-center text-xs text-ink-500">
-© 2026 Vanish ·
-<a href="../privacy.html">Privacy</a> ·
-<a href="../terms.html">Terms</a> ·
-<a href="../contact.html">Contact</a>
-</div>
-</footer>
-
+  <script>lucide.createIcons();</script>
 </body>
 </html>
