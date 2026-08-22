@@ -1,6 +1,7 @@
 /* ==========================================================================
    Vanish — TempMailPortal Integration
    Dark email reading experience
+   Cloudflare uniqueness protection for custom addresses
    ========================================================================== */
 
 (() => {
@@ -11,8 +12,14 @@
   // ------------------------------------------------------------------------
 
   const API_BASE = 'https://api.tempmailportal.com';
+
+  const VANISH_API =
+    'https://vanishtemp-api.kuroogaji.workers.dev';
+
   const POLL_MS = 9000;
-  const STORAGE_KEY = 'vanish.tempmailportal.v1';
+
+  const STORAGE_KEY =
+    'vanish.tempmailportal.v1';
 
   // ------------------------------------------------------------------------
   // State
@@ -38,44 +45,89 @@
   // ------------------------------------------------------------------------
 
   const el = {
-    addressText: document.getElementById('address-text'),
-    addressCursor: document.getElementById('address-cursor'),
-    addressBox: document.getElementById('address-box'),
-    addressSkeleton: document.getElementById('address-skeleton'),
-    expiryNote: document.getElementById('expiry-note'),
+    addressText:
+      document.getElementById('address-text'),
 
-    btnCopy: document.getElementById('btn-copy'),
-    copyTooltip: document.getElementById('copy-tooltip'),
+    addressCursor:
+      document.getElementById('address-cursor'),
 
-    btnRefresh: document.getElementById('btn-refresh'),
-    btnRandom: document.getElementById('btn-random'),
-    btnDelete: document.getElementById('btn-delete'),
+    addressBox:
+      document.getElementById('address-box'),
 
-    inputPrefix: document.getElementById('input-prefix'),
-    selectDomain: document.getElementById('select-domain'),
-    btnCreateCustom: document.getElementById('btn-create-custom'),
+    addressSkeleton:
+      document.getElementById('address-skeleton'),
 
-    pollBar: document.getElementById('poll-bar'),
-    pollLabel: document.getElementById('poll-label'),
+    expiryNote:
+      document.getElementById('expiry-note'),
 
-    inboxList: document.getElementById('inbox-list'),
-    inboxEmpty: document.getElementById('inbox-empty'),
-    inboxCount: document.getElementById('inbox-count'),
+    btnCopy:
+      document.getElementById('btn-copy'),
 
-    viewerEmpty: document.getElementById('viewer-empty'),
-    viewerContent: document.getElementById('viewer-content'),
+    copyTooltip:
+      document.getElementById('copy-tooltip'),
 
-    viewerSubject: document.getElementById('viewer-subject'),
-    viewerFrom: document.getElementById('viewer-from'),
-    viewerDate: document.getElementById('viewer-date'),
+    btnRefresh:
+      document.getElementById('btn-refresh'),
 
-    viewerAttachments: document.getElementById('viewer-attachments'),
-    viewerFrame: document.getElementById('viewer-frame'),
+    btnRandom:
+      document.getElementById('btn-random'),
 
-    btnCloseViewer: document.getElementById('btn-close-viewer'),
+    btnDelete:
+      document.getElementById('btn-delete'),
 
-    toast: document.getElementById('toast'),
-    toastText: document.getElementById('toast-text'),
+    inputPrefix:
+      document.getElementById('input-prefix'),
+
+    selectDomain:
+      document.getElementById('select-domain'),
+
+    btnCreateCustom:
+      document.getElementById('btn-create-custom'),
+
+    pollBar:
+      document.getElementById('poll-bar'),
+
+    pollLabel:
+      document.getElementById('poll-label'),
+
+    inboxList:
+      document.getElementById('inbox-list'),
+
+    inboxEmpty:
+      document.getElementById('inbox-empty'),
+
+    inboxCount:
+      document.getElementById('inbox-count'),
+
+    viewerEmpty:
+      document.getElementById('viewer-empty'),
+
+    viewerContent:
+      document.getElementById('viewer-content'),
+
+    viewerSubject:
+      document.getElementById('viewer-subject'),
+
+    viewerFrom:
+      document.getElementById('viewer-from'),
+
+    viewerDate:
+      document.getElementById('viewer-date'),
+
+    viewerAttachments:
+      document.getElementById('viewer-attachments'),
+
+    viewerFrame:
+      document.getElementById('viewer-frame'),
+
+    btnCloseViewer:
+      document.getElementById('btn-close-viewer'),
+
+    toast:
+      document.getElementById('toast'),
+
+    toastText:
+      document.getElementById('toast-text'),
   };
 
   let toastTimer = null;
@@ -97,15 +149,27 @@
   // Toast
   // ------------------------------------------------------------------------
 
-  function showToast(message, type = 'info') {
-    if (!el.toast || !el.toastText) return;
+  function showToast(
+    message,
+    type = 'info'
+  ) {
+    if (!el.toast || !el.toastText) {
+      return;
+    }
 
-    el.toastText.textContent = message;
+    el.toastText.textContent =
+      message;
 
-    el.toast.classList.remove('hidden');
-    el.toast.classList.add('flex');
+    el.toast.classList.remove(
+      'hidden'
+    );
 
-    const icon = el.toast.querySelector('i');
+    el.toast.classList.add(
+      'flex'
+    );
+
+    const icon =
+      el.toast.querySelector('i');
 
     if (icon) {
       icon.setAttribute(
@@ -120,10 +184,16 @@
 
     clearTimeout(toastTimer);
 
-    toastTimer = setTimeout(() => {
-      el.toast.classList.add('hidden');
-      el.toast.classList.remove('flex');
-    }, 3200);
+    toastTimer =
+      setTimeout(() => {
+        el.toast.classList.add(
+          'hidden'
+        );
+
+        el.toast.classList.remove(
+          'flex'
+        );
+      }, 3200);
   }
 
   // ------------------------------------------------------------------------
@@ -131,8 +201,12 @@
   // ------------------------------------------------------------------------
 
   function escapeHtml(value) {
-    const div = document.createElement('div');
-    div.textContent = value ?? '';
+    const div =
+      document.createElement('div');
+
+    div.textContent =
+      value ?? '';
+
     return div.innerHTML;
   }
 
@@ -142,39 +216,53 @@
    * Email HTML is untrusted content.
    */
   function sanitiseEmailHtml(html) {
-    if (!html) return '';
+    if (!html) {
+      return '';
+    }
 
-    const parser = new DOMParser();
+    const parser =
+      new DOMParser();
 
-    const document = parser.parseFromString(
-      html,
-      'text/html'
-    );
+    const document =
+      parser.parseFromString(
+        html,
+        'text/html'
+      );
 
-    // Remove executable / interactive content.
     document
       .querySelectorAll(
         'script, noscript, iframe, object, embed, form, input, button, textarea, select, video, audio'
       )
-      .forEach((node) => node.remove());
+      .forEach(
+        (node) => node.remove()
+      );
 
-    // Remove event-handler attributes.
     document
       .querySelectorAll('*')
       .forEach((node) => {
-        [...node.attributes].forEach((attribute) => {
+
+        [
+          ...node.attributes,
+        ].forEach((attribute) => {
+
           if (
-            attribute.name.toLowerCase().startsWith('on')
+            attribute.name
+              .toLowerCase()
+              .startsWith('on')
           ) {
-            node.removeAttribute(attribute.name);
+            node.removeAttribute(
+              attribute.name
+            );
           }
         });
 
-        // Prevent arbitrary target behaviour.
         if (
           node.hasAttribute('target')
         ) {
-          node.setAttribute('target', '_blank');
+          node.setAttribute(
+            'target',
+            '_blank'
+          );
         }
       });
 
@@ -188,26 +276,36 @@
   // ------------------------------------------------------------------------
 
   function formatDate(dateString) {
-    if (!dateString) return '';
-
-    const date = new Date(dateString);
-
-    if (Number.isNaN(date.getTime())) {
+    if (!dateString) {
       return '';
     }
 
-    const now = new Date();
+    const date =
+      new Date(dateString);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return '';
+    }
+
+    const now =
+      new Date();
 
     const sameDay =
-      date.toDateString() === now.toDateString();
+      date.toDateString() ===
+      now.toDateString();
 
-    const time = date.toLocaleTimeString(
-      undefined,
-      {
-        hour: '2-digit',
-        minute: '2-digit',
-      }
-    );
+    const time =
+      date.toLocaleTimeString(
+        undefined,
+        {
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      );
 
     if (sameDay) {
       return `Today, ${time}`;
@@ -230,7 +328,8 @@
   // ------------------------------------------------------------------------
 
   function setBusy(busy) {
-    state.isBusy = busy;
+    state.isBusy =
+      busy;
 
     [
       el.btnCopy,
@@ -239,9 +338,13 @@
       el.btnDelete,
       el.btnCreateCustom,
     ].forEach((button) => {
-      if (!button) return;
 
-      button.disabled = busy;
+      if (!button) {
+        return;
+      }
+
+      button.disabled =
+        busy;
 
       button.classList.toggle(
         'opacity-50',
@@ -255,12 +358,20 @@
     });
   }
 
-  function spin(button, spinning) {
-    if (!button) return;
+  function spin(
+    button,
+    spinning
+  ) {
+    if (!button) {
+      return;
+    }
 
-    const icon = button.querySelector('i');
+    const icon =
+      button.querySelector('i');
 
-    if (!icon) return;
+    if (!icon) {
+      return;
+    }
 
     icon.classList.toggle(
       'animate-spin',
@@ -268,7 +379,9 @@
     );
   }
 
-  function setAddressLoading(loading) {
+  function setAddressLoading(
+    loading
+  ) {
     el.addressSkeleton?.classList.toggle(
       'hidden',
       !loading
@@ -296,16 +409,24 @@
     } = options;
 
     const headers = {
-      Accept: 'application/json',
+      Accept:
+        'application/json',
     };
 
-    if (body !== undefined) {
-      headers['Content-Type'] =
+    if (
+      body !== undefined
+    ) {
+      headers[
+        'Content-Type'
+      ] =
         'application/json';
     }
 
     if (auth) {
-      if (!state.account?.token) {
+
+      if (
+        !state.account?.token
+      ) {
         throw new Error(
           'Your inbox session is missing.'
         );
@@ -327,23 +448,29 @@
     let response;
 
     try {
-      response = await fetch(
-        `${API_BASE}${path}`,
-        {
-          method,
-          headers,
-          body:
-            body !== undefined
-              ? JSON.stringify(body)
-              : undefined,
-          signal: controller.signal,
-        }
-      );
+
+      response =
+        await fetch(
+          `${API_BASE}${path}`,
+          {
+            method,
+            headers,
+            body:
+              body !== undefined
+                ? JSON.stringify(body)
+                : undefined,
+            signal:
+              controller.signal,
+          }
+        );
+
     } catch (error) {
+
       clearTimeout(timeout);
 
       if (
-        error.name === 'AbortError'
+        error.name ===
+        'AbortError'
       ) {
         throw new Error(
           'The request timed out.'
@@ -364,14 +491,20 @@
 
     if (text) {
       try {
-        data = JSON.parse(text);
+        data =
+          JSON.parse(text);
       } catch {
         data = null;
       }
     }
 
     if (!response.ok) {
-      if (response.status === 429) {
+
+      if (
+        response.status ===
+        429
+      ) {
+
         const retry =
           response.headers.get(
             'Retry-After'
@@ -394,14 +527,125 @@
   }
 
   // ------------------------------------------------------------------------
+  // Vanish Cloudflare API
+  // ------------------------------------------------------------------------
+
+  async function vanishApiRequest(
+    path,
+    options = {}
+  ) {
+    const {
+      method = 'GET',
+      body,
+      timeoutMs = 15000,
+    } = options;
+
+    const headers = {
+      Accept:
+        'application/json',
+    };
+
+    if (
+      body !== undefined
+    ) {
+      headers[
+        'Content-Type'
+      ] =
+        'application/json';
+    }
+
+    const controller =
+      new AbortController();
+
+    const timeout =
+      setTimeout(
+        () => controller.abort(),
+        timeoutMs
+      );
+
+    let response;
+
+    try {
+
+      response =
+        await fetch(
+          `${VANISH_API}${path}`,
+          {
+            method,
+            headers,
+            body:
+              body !== undefined
+                ? JSON.stringify(body)
+                : undefined,
+            signal:
+              controller.signal,
+          }
+        );
+
+    } catch (error) {
+
+      clearTimeout(timeout);
+
+      if (
+        error.name ===
+        'AbortError'
+      ) {
+        throw new Error(
+          'The request timed out.'
+        );
+      }
+
+      throw new Error(
+        'Could not connect to Vanish.'
+      );
+    }
+
+    clearTimeout(timeout);
+
+    const text =
+      await response.text();
+
+    let data = null;
+
+    if (text) {
+      try {
+        data =
+          JSON.parse(text);
+      } catch {
+        data = null;
+      }
+    }
+
+    if (!response.ok) {
+
+      const error =
+        new Error(
+          data?.error ||
+          `Request failed (${response.status}).`
+        );
+
+      error.status =
+        response.status;
+
+      throw error;
+    }
+
+    return data;
+  }
+
+  // ------------------------------------------------------------------------
   // Domains
   // ------------------------------------------------------------------------
 
   async function fetchDomains() {
     const data =
-      await apiRequest('/api/domains');
+      await apiRequest(
+        '/api/domains'
+      );
 
-    if (!Array.isArray(data)) {
+    if (
+      !Array.isArray(data)
+    ) {
       throw new Error(
         'The temporary-mail service returned an invalid domain list.'
       );
@@ -409,33 +653,44 @@
 
     return data.filter(
       (domain) =>
-        typeof domain === 'string' &&
+        typeof domain ===
+          'string' &&
         domain.length > 0
     );
   }
 
   async function loadDomains() {
     try {
+
       state.domains =
         await fetchDomains();
 
-      if (!state.domains.length) {
+      if (
+        !state.domains.length
+      ) {
         throw new Error(
           'No temporary-mail domains are currently available.'
         );
       }
 
-      if (el.selectDomain) {
-        el.selectDomain.innerHTML = '';
+      if (
+        el.selectDomain
+      ) {
+
+        el.selectDomain.innerHTML =
+          '';
 
         state.domains.forEach(
           (domain) => {
+
             const option =
               document.createElement(
                 'option'
               );
 
-            option.value = domain;
+            option.value =
+              domain;
+
             option.textContent =
               `@${domain}`;
 
@@ -447,8 +702,12 @@
       }
 
       return true;
+
     } catch (error) {
-      if (el.selectDomain) {
+
+      if (
+        el.selectDomain
+      ) {
         el.selectDomain.innerHTML =
           '<option>unavailable</option>';
       }
@@ -464,21 +723,22 @@
   }
 
   // ------------------------------------------------------------------------
-  // Inbox
+  // Inbox creation
   // ------------------------------------------------------------------------
 
-  async function createInbox(
-    options = {}
-  ) {
+  /*
+   * RANDOM INBOX
+   *
+   * Random addresses continue to be created directly through
+   * TempMailPortal.
+   */
+  async function createRandomInbox() {
+
     const data =
       await apiRequest(
         '/api/inbox',
         {
           method: 'POST',
-          body:
-            Object.keys(options).length
-              ? options
-              : undefined,
         }
       );
 
@@ -492,19 +752,37 @@
     }
 
     return {
-      address: data.address,
-      token: data.token,
+      address:
+        data.address,
+
+      token:
+        data.token,
+
+      isCustom:
+        false,
+
+      expiresAt:
+        null,
     };
   }
 
-  async function createRandomInbox() {
-    return createInbox();
-  }
-
+  /*
+   * CUSTOM INBOX
+   *
+   * Custom addresses are created through the Vanish
+   * Cloudflare Worker.
+   *
+   * The Worker handles:
+   *
+   * 1. D1 uniqueness
+   * 2. TempMailPortal creation
+   * 3. Reservation expiry
+   */
   async function createCustomInbox(
     login,
     domain
   ) {
+
     const cleanLogin =
       String(login || '')
         .trim()
@@ -527,10 +805,46 @@
       );
     }
 
-    return createInbox({
-      login: cleanLogin,
-      domain,
-    });
+    const data =
+      await vanishApiRequest(
+        '/reserve',
+        {
+          method: 'POST',
+
+          body: {
+            login:
+              cleanLogin,
+
+            domain:
+              domain,
+          },
+        }
+      );
+
+    if (
+      !data?.address ||
+      !data?.token
+    ) {
+      throw new Error(
+        'Vanish could not create that custom address.'
+      );
+    }
+
+    return {
+      address:
+        data.address,
+
+      token:
+        data.token,
+
+      isCustom:
+        true,
+
+      expiresAt:
+        Number(
+          data.expiresAt
+        ) || null,
+    };
   }
 
   // ------------------------------------------------------------------------
@@ -538,27 +852,36 @@
   // ------------------------------------------------------------------------
 
   function saveAccount() {
+
     if (!state.account) {
+
       localStorage.removeItem(
         STORAGE_KEY
       );
+
       return;
     }
 
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(state.account)
+      JSON.stringify(
+        state.account
+      )
     );
   }
 
   function loadAccount() {
+
     try {
+
       const saved =
         localStorage.getItem(
           STORAGE_KEY
         );
 
-      if (!saved) return null;
+      if (!saved) {
+        return null;
+      }
 
       const account =
         JSON.parse(saved);
@@ -570,8 +893,28 @@
         return null;
       }
 
+      /*
+       * If this is a custom address and the local
+       * reservation has expired, do not restore it.
+       */
+      if (
+        account.isCustom === true &&
+        account.expiresAt &&
+        Date.now() >=
+          Number(account.expiresAt)
+      ) {
+
+        localStorage.removeItem(
+          STORAGE_KEY
+        );
+
+        return null;
+      }
+
       return account;
+
     } catch {
+
       return null;
     }
   }
@@ -613,23 +956,40 @@
   // ------------------------------------------------------------------------
 
   function renderInbox() {
-    if (!el.inboxList) return;
 
-    el.inboxList
-      .querySelectorAll('.msg-item')
-      .forEach((node) => node.remove());
-
-    const messages = [...state.messages];
-
-    if (el.inboxCount) {
-      el.inboxCount.textContent =
-        String(messages.length);
+    if (!el.inboxList) {
+      return;
     }
 
-    if (!messages.length) {
+    el.inboxList
+      .querySelectorAll(
+        '.msg-item'
+      )
+      .forEach(
+        (node) =>
+          node.remove()
+      );
+
+    const messages =
+      [...state.messages];
+
+    if (
+      el.inboxCount
+    ) {
+      el.inboxCount.textContent =
+        String(
+          messages.length
+        );
+    }
+
+    if (
+      !messages.length
+    ) {
+
       el.inboxEmpty?.classList.remove(
         'hidden'
       );
+
       return;
     }
 
@@ -637,69 +997,80 @@
       'hidden'
     );
 
-    messages.forEach((message) => {
-      const button =
-        document.createElement('button');
+    messages.forEach(
+      (message) => {
 
-      button.type = 'button';
+        const button =
+          document.createElement(
+            'button'
+          );
 
-      button.className =
-        `msg-item${
-          message.id ===
-          state.activeMessageId
-            ? ' active'
-            : ''
-        }`;
+        button.type =
+          'button';
 
-      button.dataset.id =
-        message.id;
+        button.className =
+          `msg-item${
+            message.id ===
+            state.activeMessageId
+              ? ' active'
+              : ''
+          }`;
 
-      const sender =
-        message.fromName ||
-        message.from ||
-        'Unknown sender';
+        button.dataset.id =
+          message.id;
 
-      const subject =
-        message.subject ||
-        '(no subject)';
+        const sender =
+          message.fromName ||
+          message.from ||
+          'Unknown sender';
 
-      const snippet =
-        message.intro ||
-        'No preview available.';
+        const subject =
+          message.subject ||
+          '(no subject)';
 
-      button.innerHTML = `
-        <div class="msg-item-top">
+        const snippet =
+          message.intro ||
+          'No preview available.';
 
-          <div class="msg-sender">
-            ${escapeHtml(sender)}
+        button.innerHTML = `
+          <div class="msg-item-top">
+
+            <div class="msg-sender">
+              ${escapeHtml(sender)}
+            </div>
+
+            <div class="msg-date">
+              ${escapeHtml(
+                formatDate(
+                  message.date
+                )
+              )}
+            </div>
+
           </div>
 
-          <div class="msg-date">
-            ${escapeHtml(
-              formatDate(message.date)
-            )}
+          <div class="msg-subject">
+            ${escapeHtml(subject)}
           </div>
 
-        </div>
+          <div class="msg-snippet">
+            ${escapeHtml(snippet)}
+          </div>
+        `;
 
-        <div class="msg-subject">
-          ${escapeHtml(subject)}
-        </div>
+        button.addEventListener(
+          'click',
+          () =>
+            openMessage(
+              message.id
+            )
+        );
 
-        <div class="msg-snippet">
-          ${escapeHtml(snippet)}
-        </div>
-      `;
-
-      button.addEventListener(
-        'click',
-        () => openMessage(message.id)
-      );
-
-      el.inboxList.appendChild(
-        button
-      );
-    });
+        el.inboxList.appendChild(
+          button
+        );
+      }
+    );
   }
 
   // ------------------------------------------------------------------------
@@ -710,14 +1081,16 @@
     html,
     text
   ) {
-    let safeHtml =
-      sanitiseEmailHtml(html);
 
-    /*
-     * If there is no HTML version,
-     * create a readable plain-text version.
-     */
-    if (!safeHtml.trim()) {
+    let safeHtml =
+      sanitiseEmailHtml(
+        html
+      );
+
+    if (
+      !safeHtml.trim()
+    ) {
+
       safeHtml = `
         <div class="plain-text">
           ${escapeHtml(
@@ -782,11 +1155,6 @@
             word-wrap: break-word !important;
             overflow-wrap: anywhere !important;
           }
-
-          /*
-           * Force common email containers
-           * away from the old white-email look.
-           */
 
           table,
           tbody,
@@ -872,10 +1240,6 @@
             margin-right: 0 !important;
           }
 
-          /*
-           * Make large email tables responsive.
-           */
-
           table {
             max-width: 100% !important;
           }
@@ -959,8 +1323,6 @@
               5px !important;
           }
 
-          /* Plain text emails */
-
           .plain-text {
             white-space: pre-wrap;
 
@@ -979,19 +1341,10 @@
             text-align: left;
           }
 
-          /*
-           * Remove old email background colours
-           * from inline HTML attributes.
-           */
-
           [bgcolor] {
             background-color:
               transparent !important;
           }
-
-          /*
-           * Keep the email visually contained.
-           */
 
           body > table:first-child,
           body > div:first-child {
@@ -1040,7 +1393,9 @@
   // ------------------------------------------------------------------------
 
   function resetViewer() {
-    state.activeMessageId = null;
+
+    state.activeMessageId =
+      null;
 
     el.viewerContent?.classList.add(
       'hidden'
@@ -1054,11 +1409,17 @@
       'hidden'
     );
 
-    if (el.viewerFrame) {
-      el.viewerFrame.srcdoc = '';
+    if (
+      el.viewerFrame
+    ) {
+      el.viewerFrame.srcdoc =
+        '';
     }
 
-    if (el.viewerAttachments) {
+    if (
+      el.viewerAttachments
+    ) {
+
       el.viewerAttachments.innerHTML =
         '';
 
@@ -1069,7 +1430,9 @@
   }
 
   async function openMessage(id) {
-    state.activeMessageId = id;
+
+    state.activeMessageId =
+      id;
 
     renderInbox();
 
@@ -1088,22 +1451,19 @@
     el.viewerSubject.textContent =
       'Loading message…';
 
-    el.viewerFrom.textContent = '';
-    el.viewerDate.textContent = '';
+    el.viewerFrom.textContent =
+      '';
 
-    el.viewerAttachments.innerHTML = '';
+    el.viewerDate.textContent =
+      '';
+
+    el.viewerAttachments.innerHTML =
+      '';
 
     el.viewerAttachments.classList.add(
       'hidden'
     );
 
-    /*
-     * Empty sandbox:
-     *
-     * No scripts.
-     * No forms.
-     * No top navigation.
-     */
     el.viewerFrame.setAttribute(
       'sandbox',
       ''
@@ -1130,11 +1490,13 @@
     `;
 
     try {
+
       const message =
         await fetchMessage(id);
 
       if (
-        state.activeMessageId !== id
+        state.activeMessageId !==
+        id
       ) {
         return;
       }
@@ -1150,10 +1512,14 @@
             'Unknown sender';
 
       el.viewerDate.textContent =
-        formatDate(message.date);
+        formatDate(
+          message.date
+        );
 
       const html =
-        Array.isArray(message.html)
+        Array.isArray(
+          message.html
+        )
           ? message.html.join('')
           : message.html;
 
@@ -1164,7 +1530,8 @@
         );
 
       renderAttachments(
-        message.attachments || []
+        message.attachments ||
+        []
       );
 
       renderIcons();
@@ -1212,14 +1579,20 @@
   function renderAttachments(
     attachments
   ) {
-    if (!el.viewerAttachments) {
+
+    if (
+      !el.viewerAttachments
+    ) {
       return;
     }
 
     el.viewerAttachments.innerHTML =
       '';
 
-    if (!attachments.length) {
+    if (
+      !attachments.length
+    ) {
+
       el.viewerAttachments.classList.add(
         'hidden'
       );
@@ -1233,11 +1606,15 @@
 
     attachments.forEach(
       (attachment) => {
+
         const item =
-          document.createElement('div');
+          document.createElement(
+            'div'
+          );
 
         const downloadable =
-          attachment.downloadable === true;
+          attachment.downloadable ===
+          true;
 
         item.className =
           'attachment-chip';
@@ -1280,6 +1657,7 @@
   async function refreshMessages({
     silent = false,
   } = {}) {
+
     if (
       !state.account ||
       state.isFetchingList
@@ -1287,17 +1665,26 @@
       return;
     }
 
-    state.isFetchingList = true;
+    state.isFetchingList =
+      true;
 
     if (!silent) {
-      spin(el.btnRefresh, true);
+      spin(
+        el.btnRefresh,
+        true
+      );
     }
 
     try {
+
       const messages =
         await fetchMessages();
 
-      if (!Array.isArray(messages)) {
+      if (
+        !Array.isArray(
+          messages
+        )
+      ) {
         throw new Error(
           'The inbox returned an invalid response.'
         );
@@ -1306,7 +1693,8 @@
       const previousIds =
         new Set(
           state.messages.map(
-            (message) => message.id
+            (message) =>
+              message.id
           )
         );
 
@@ -1318,7 +1706,8 @@
             )
         );
 
-      state.messages = messages;
+      state.messages =
+        messages;
 
       renderInbox();
 
@@ -1334,6 +1723,7 @@
     } catch (error) {
 
       if (!silent) {
+
         showToast(
           error.message ||
           'Could not refresh the inbox.',
@@ -1343,10 +1733,14 @@
 
     } finally {
 
-      state.isFetchingList = false;
+      state.isFetchingList =
+        false;
 
       if (!silent) {
-        spin(el.btnRefresh, false);
+        spin(
+          el.btnRefresh,
+          false
+        );
       }
     }
   }
@@ -1356,6 +1750,7 @@
   // ------------------------------------------------------------------------
 
   function stopPolling() {
+
     clearInterval(
       state.pollTimer
     );
@@ -1364,57 +1759,74 @@
       state.countdownTimer
     );
 
-    state.pollTimer = null;
-    state.countdownTimer = null;
+    state.pollTimer =
+      null;
+
+    state.countdownTimer =
+      null;
   }
 
   function startPolling() {
+
     stopPolling();
 
-    state.msRemaining = POLL_MS;
+    state.msRemaining =
+      POLL_MS;
 
     state.pollTimer =
-      setInterval(() => {
+      setInterval(
+        () => {
 
-        state.msRemaining =
-          POLL_MS;
+          state.msRemaining =
+            POLL_MS;
 
-        refreshMessages({
-          silent: true,
-        });
+          refreshMessages({
+            silent: true,
+          });
 
-      }, POLL_MS);
+        },
+        POLL_MS
+      );
 
     state.countdownTimer =
-      setInterval(() => {
+      setInterval(
+        () => {
 
-        state.msRemaining =
-          Math.max(
-            0,
-            state.msRemaining - 100
-          );
+          state.msRemaining =
+            Math.max(
+              0,
+              state.msRemaining -
+                100
+            );
 
-        const percentage =
-          100 -
-          (
-            state.msRemaining /
-            POLL_MS
-          ) *
-            100;
+          const percentage =
+            100 -
+            (
+              state.msRemaining /
+              POLL_MS
+            ) *
+              100;
 
-        if (el.pollBar) {
-          el.pollBar.style.width =
-            `${percentage}%`;
-        }
+          if (
+            el.pollBar
+          ) {
+            el.pollBar.style.width =
+              `${percentage}%`;
+          }
 
-        if (el.pollLabel) {
-          el.pollLabel.textContent =
-            `next check ${Math.ceil(
-              state.msRemaining / 1000
-            )}s`;
-        }
+          if (
+            el.pollLabel
+          ) {
+            el.pollLabel.textContent =
+              `next check ${Math.ceil(
+                state.msRemaining /
+                  1000
+              )}s`;
+          }
 
-      }, 100);
+        },
+        100
+      );
   }
 
   // ------------------------------------------------------------------------
@@ -1425,22 +1837,45 @@
     account,
     announce = true
   ) {
+
     stopPolling();
 
-    state.account = account;
-    state.messages = [];
-    state.activeMessageId = null;
+    state.account =
+      account;
+
+    state.messages =
+      [];
+
+    state.activeMessageId =
+      null;
 
     saveAccount();
 
     el.addressText.textContent =
       account.address;
 
-    setAddressLoading(false);
+    setAddressLoading(
+      false
+    );
 
-    if (el.expiryNote) {
-      el.expiryNote.textContent =
-        'Messages expire after about 24 hours';
+    if (
+      el.expiryNote
+    ) {
+
+      if (
+        account.isCustom ===
+          true &&
+        account.expiresAt
+      ) {
+
+        el.expiryNote.textContent =
+          'Address reserved for about 24 hours';
+
+      } else {
+
+        el.expiryNote.textContent =
+          'Messages expire after about 24 hours';
+      }
     }
 
     resetViewer();
@@ -1452,6 +1887,7 @@
     startPolling();
 
     if (announce) {
+
       showToast(
         'New address ready.'
       );
@@ -1463,15 +1899,20 @@
   // ------------------------------------------------------------------------
 
   async function copyAddress() {
-    if (!state.account) return;
+
+    if (!state.account) {
+      return;
+    }
 
     const address =
       state.account.address;
 
     try {
+
       await navigator.clipboard.writeText(
         address
       );
+
     } catch {
 
       const textarea =
@@ -1479,7 +1920,8 @@
           'textarea'
         );
 
-      textarea.value = address;
+      textarea.value =
+        address;
 
       textarea.style.position =
         'fixed';
@@ -1502,28 +1944,44 @@
       textarea.remove();
     }
 
-    if (el.copyTooltip) {
+    if (
+      el.copyTooltip
+    ) {
+
       el.copyTooltip.classList.add(
         'show'
       );
 
-      setTimeout(() => {
-        el.copyTooltip.classList.remove(
-          'show'
-        );
-      }, 1500);
+      setTimeout(
+        () => {
+
+          el.copyTooltip.classList.remove(
+            'show'
+          );
+
+        },
+        1500
+      );
     }
 
-    if (el.addressBox) {
+    if (
+      el.addressBox
+    ) {
+
       el.addressBox.classList.add(
         'flash-copied'
       );
 
-      setTimeout(() => {
-        el.addressBox.classList.remove(
-          'flash-copied'
-        );
-      }, 1500);
+      setTimeout(
+        () => {
+
+          el.addressBox.classList.remove(
+            'flash-copied'
+          );
+
+        },
+        1500
+      );
     }
   }
 
@@ -1532,13 +1990,23 @@
   // ------------------------------------------------------------------------
 
   async function newRandomAddress() {
-    if (state.isBusy) return;
+
+    if (
+      state.isBusy
+    ) {
+      return;
+    }
 
     setBusy(true);
 
-    spin(el.btnRandom, true);
+    spin(
+      el.btnRandom,
+      true
+    );
 
-    setAddressLoading(true);
+    setAddressLoading(
+      true
+    );
 
     el.addressText.textContent =
       'generating…';
@@ -1548,7 +2016,9 @@
       const account =
         await createRandomInbox();
 
-      await activateInbox(account);
+      await activateInbox(
+        account
+      );
 
     } catch (error) {
 
@@ -1556,7 +2026,9 @@
         state.account?.address ||
         'unavailable';
 
-      setAddressLoading(false);
+      setAddressLoading(
+        false
+      );
 
       showToast(
         error.message ||
@@ -1568,7 +2040,10 @@
 
       setBusy(false);
 
-      spin(el.btnRandom, false);
+      spin(
+        el.btnRandom,
+        false
+      );
     }
   }
 
@@ -1577,13 +2052,20 @@
   // ------------------------------------------------------------------------
 
   async function createCustomAddress() {
-    if (state.isBusy) return;
+
+    if (
+      state.isBusy
+    ) {
+      return;
+    }
 
     const login =
-      el.inputPrefix?.value || '';
+      el.inputPrefix?.value ||
+      '';
 
     const domain =
-      el.selectDomain?.value || '';
+      el.selectDomain?.value ||
+      '';
 
     setBusy(true);
 
@@ -1600,19 +2082,37 @@
           domain
         );
 
-      await activateInbox(account);
+      await activateInbox(
+        account
+      );
 
-      if (el.inputPrefix) {
-        el.inputPrefix.value = '';
+      if (
+        el.inputPrefix
+      ) {
+        el.inputPrefix.value =
+          '';
       }
 
     } catch (error) {
 
-      showToast(
-        error.message ||
-        'Could not create that address.',
-        'error'
-      );
+      if (
+        error.status ===
+        409
+      ) {
+
+        showToast(
+          'That custom email address is already in use. Please choose another name.',
+          'error'
+        );
+
+      } else {
+
+        showToast(
+          error.message ||
+          'Could not create that address.',
+          'error'
+        );
+      }
 
     } finally {
 
@@ -1630,6 +2130,7 @@
   // ------------------------------------------------------------------------
 
   async function deleteCurrentInbox() {
+
     if (
       state.isBusy ||
       !state.account
@@ -1644,9 +2145,50 @@
       true
     );
 
+    const accountToDelete =
+      state.account;
+
     try {
 
+      /*
+       * First delete the actual TempMailPortal inbox.
+       */
       await deleteInbox();
+
+      /*
+       * If this is a custom Vanish address,
+       * release its D1 reservation too.
+       */
+      if (
+        accountToDelete.isCustom ===
+        true
+      ) {
+
+        try {
+
+          await vanishApiRequest(
+            '/release',
+            {
+              method: 'POST',
+
+              body: {
+                address:
+                  accountToDelete.address,
+
+                token:
+                  accountToDelete.token,
+              },
+            }
+          );
+
+        } catch (releaseError) {
+
+          console.warn(
+            'Could not immediately release custom address:',
+            releaseError
+          );
+        }
+      }
 
       stopPolling();
 
@@ -1654,9 +2196,14 @@
         STORAGE_KEY
       );
 
-      state.account = null;
-      state.messages = [];
-      state.activeMessageId = null;
+      state.account =
+        null;
+
+      state.messages =
+        [];
+
+      state.activeMessageId =
+        null;
 
       const replacement =
         await createRandomInbox();
@@ -1678,7 +2225,9 @@
         'error'
       );
 
-      if (state.account) {
+      if (
+        state.account
+      ) {
         startPolling();
       }
 
@@ -1698,6 +2247,7 @@
   // ------------------------------------------------------------------------
 
   async function manualRefresh() {
+
     state.msRemaining =
       POLL_MS;
 
@@ -1736,7 +2286,10 @@
       'keydown',
       (event) => {
 
-        if (event.key === 'Enter') {
+        if (
+          event.key ===
+          'Enter'
+        ) {
           createCustomAddress();
         }
 
@@ -1763,7 +2316,8 @@
       'click',
       () => {
 
-        state.activeMessageId = null;
+        state.activeMessageId =
+          null;
 
         el.viewerContent?.classList.remove(
           'mobile-open'
@@ -1778,7 +2332,6 @@
         );
 
         renderInbox();
-
       }
     );
 
@@ -1795,7 +2348,6 @@
           refreshMessages({
             silent: true,
           });
-
         }
 
       }
@@ -1812,14 +2364,18 @@
 
     bindEvents();
 
-    setAddressLoading(true);
+    setAddressLoading(
+      true
+    );
 
     const domainsReady =
       await loadDomains();
 
     if (!domainsReady) {
 
-      setAddressLoading(false);
+      setAddressLoading(
+        false
+      );
 
       el.addressText.textContent =
         'unavailable';
@@ -1865,7 +2421,9 @@
 
     } catch (error) {
 
-      setAddressLoading(false);
+      setAddressLoading(
+        false
+      );
 
       el.addressText.textContent =
         'unavailable';
