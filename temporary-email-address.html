@@ -1,185 +1,263 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Temporary Email Address — Create One Free | Vanish</title>
+  <title>Temporary Email Address — Free & Instant | Vanish</title>
 
-<meta name="description"
-content="Create a free temporary email address instantly with Vanish. Receive emails in a disposable inbox without signup and use it for short-term communication.">
+  <meta
+    name="description"
+    content="Create a free temporary email address instantly with Vanish. Receive emails without signup and keep your primary inbox separate from temporary communications."
+  />
 
-<meta name="robots" content="index, follow">
-<meta name="theme-color" content="#080B10">
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#080B10" />
+  <meta name="color-scheme" content="dark" />
 
-<link rel="canonical" href="https://vanishtemp.com/seo/temporary-email-address.html">
+  <link rel="canonical" href="https://vanishtemp.com/temporary-email-address.html" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="alternate icon" href="./favicon.ico" />
 
-<meta property="og:title" content="Temporary Email Address — Create One Free | Vanish">
-<meta property="og:description" content="Create a temporary email address instantly without signup.">
-<meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="../styles.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7NG3WYST14"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-7NG3WYST14');
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+            mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "monospace"]
+          },
+          colors: {
+            ink: {
+              950:"#080B10",900:"#0C1017",850:"#10151D",800:"#151B25",
+              700:"#1D2430",600:"#2A3341",500:"#3E4B5C",400:"#6B7A8D",
+              300:"#94A3B5",200:"#C2CCD8",100:"#E7ECF1"
+            },
+            signal:{DEFAULT:"#37E29A",dim:"#1F8A5C",glow:"#37E29A33"},
+            violet:{DEFAULT:"#8A8CF0",dim:"#5457B8"}
+          },
+          boxShadow:{
+            "glow-signal":"0 0 0 1px rgba(55,226,154,0.25), 0 8px 30px -8px rgba(55,226,154,0.35)",
+            card:"0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 30px -18px rgba(0,0,0,0.6)"
+          }
+        }
+      }
+    };
+  </script>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7NG3WYST14"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-7NG3WYST14");
+  </script>
 </head>
 
-<body class="bg-ink-950 text-ink-100 font-sans antialiased">
+<body class="bg-ink-950 text-ink-100 font-sans antialiased min-h-screen">
 
-<header class="border-b border-ink-800">
-<div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-<a href="../index.html" class="font-semibold text-lg">
-Vanish<span class="text-signal">.</span>
-</a>
-<a href="../index.html" class="bg-signal text-ink-950 rounded-xl px-4 py-2 text-sm font-semibold">
-Create address
-</a>
-</div>
-</header>
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 h-[560px] w-[900px] rounded-full bg-signal/[0.06] blur-[120px]"></div>
+    <div class="absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full bg-violet/[0.08] blur-[110px]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.035)_1px,transparent_0)] bg-[size:26px_26px]"></div>
+  </div>
 
-<main>
+  <header class="border-b border-ink-800/80 bg-ink-950/70 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-2.5">
+        <div class="h-8 w-8 rounded-lg bg-ink-850 border border-ink-700 flex items-center justify-center">
+          <i data-lucide="ghost" class="text-signal" style="width:18px;height:18px"></i>
+        </div>
+        <span class="font-semibold text-[15px] tracking-tight text-ink-100">
+          Vanish<span class="text-signal">.</span>
+        </span>
+      </a>
 
-<section class="max-w-4xl mx-auto px-4 pt-16 pb-12 text-center">
+      <a href="./index.html" class="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 bg-signal text-ink-950 text-xs font-semibold hover:bg-emerald-300 transition-all shadow-glow-signal">
+        <i data-lucide="mail-plus" class="h-4 w-4"></i>
+        Create an email
+      </a>
+    </div>
+  </header>
 
-<span class="text-xs uppercase tracking-[0.2em] text-signal font-semibold">
-Temporary email address
-</span>
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
 
-<h1 class="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight">
-Create a temporary email address instantly
-</h1>
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full border border-ink-800 bg-ink-900/60 text-[11px] uppercase tracking-widest text-ink-400">
+        <span class="h-1.5 w-1.5 rounded-full bg-signal animate-pulse"></span>
+        Temporary email address
+      </div>
 
-<p class="mt-5 text-lg text-ink-400 leading-8 max-w-2xl mx-auto">
-Need an email address for a short-term purpose? Vanish lets you
-create a temporary address and receive messages without creating
-a traditional email account.
-</p>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-ink-100">
+        Create a temporary email
+        <span class="text-signal">address instantly.</span>
+      </h1>
 
-<a href="../index.html"
-class="inline-flex mt-8 bg-signal text-ink-950 rounded-xl px-6 py-3 font-semibold">
-Create a temporary address
-</a>
+      <p class="mt-4 max-w-2xl mx-auto text-ink-400 text-[15px] sm:text-base leading-7">
+        Use a temporary email address for short-term registrations,
+        confirmations and testing without exposing your primary inbox.
+      </p>
 
-</section>
+      <a href="./index.html" class="mt-7 inline-flex items-center gap-2 rounded-xl px-5 py-3 bg-signal text-ink-950 font-semibold text-sm hover:bg-emerald-300 transition-all shadow-glow-signal">
+        <i data-lucide="zap" class="h-4 w-4"></i>
+        Generate your address
+      </a>
+    </div>
 
-<section class="max-w-4xl mx-auto px-4 pb-16">
+    <article class="rounded-2xl border border-ink-700 bg-ink-900/75 backdrop-blur-xl shadow-card">
 
-<div class="rounded-3xl border border-ink-800 bg-ink-900/60 p-7 sm:p-10">
+      <div class="p-6 sm:p-8 space-y-8">
 
-<h2 class="text-2xl font-bold">
-What is a temporary email address?
-</h2>
+        <section>
+          <h2 class="text-xl font-bold text-ink-100">What is a temporary email address?</h2>
 
-<p class="mt-4 text-ink-400 leading-7">
-A temporary email address is an email address intended for
-short-term use. It can be useful when a website asks for an email
-address but you don't want to use your primary mailbox for a
-temporary interaction.
-</p>
+          <p class="mt-3 text-sm leading-7 text-ink-300">
+            A temporary email address is an email address intended to be used
+            for a limited period or a specific purpose. It provides an alternative
+            to handing over your everyday email address whenever a website asks
+            for an email.
+          </p>
 
-<h2 class="mt-10 text-2xl font-bold">
-How to create a temporary email address
-</h2>
+          <p class="mt-3 text-sm leading-7 text-ink-300">
+            Vanish is designed to make that process simple: generate an address,
+            use it to receive the message you need, and avoid adding another
+            permanent mailbox to manage.
+          </p>
+        </section>
 
-<ol class="mt-6 space-y-5">
+        <section>
+          <h2 class="text-xl font-bold text-ink-100">Common uses</h2>
 
-<li class="flex gap-4">
-<span class="font-mono text-signal">01</span>
-<div>
-<strong>Open Vanish</strong>
-<p class="mt-1 text-sm text-ink-500">
-Visit the Vanish email generator.
-</p>
-</div>
-</li>
+          <div class="mt-5 space-y-3">
 
-<li class="flex gap-4">
-<span class="font-mono text-signal">02</span>
-<div>
-<strong>Generate an address</strong>
-<p class="mt-1 text-sm text-ink-500">
-Use the generated temporary email address or choose an available
-custom address.
-</p>
-</div>
-</li>
+            <div class="flex gap-4 rounded-xl border border-ink-700 bg-ink-850/70 p-4">
+              <i data-lucide="user-plus" class="h-5 w-5 text-signal shrink-0"></i>
+              <div>
+                <h3 class="font-semibold text-ink-100">Temporary registrations</h3>
+                <p class="mt-1 text-sm leading-6 text-ink-400">
+                  Receive a confirmation message without putting your main inbox on another mailing list.
+                </p>
+              </div>
+            </div>
 
-<li class="flex gap-4">
-<span class="font-mono text-signal">03</span>
-<div>
-<strong>Receive your message</strong>
-<p class="mt-1 text-sm text-ink-500">
-Messages sent to the address appear in the temporary inbox.
-</p>
-</div>
-</li>
+            <div class="flex gap-4 rounded-xl border border-ink-700 bg-ink-850/70 p-4">
+              <i data-lucide="flask-conical" class="h-5 w-5 text-violet shrink-0"></i>
+              <div>
+                <h3 class="font-semibold text-ink-100">Website testing</h3>
+                <p class="mt-1 text-sm leading-6 text-ink-400">
+                  Test signup and verification flows without repeatedly using a personal address.
+                </p>
+              </div>
+            </div>
 
-<li class="flex gap-4">
-<span class="font-mono text-signal">04</span>
-<div>
-<strong>Delete it when finished</strong>
-<p class="mt-1 text-sm text-ink-500">
-When the temporary inbox is no longer needed, delete it and move on.
-</p>
-</div>
-</li>
+            <div class="flex gap-4 rounded-xl border border-ink-700 bg-ink-850/70 p-4">
+              <i data-lucide="inbox" class="h-5 w-5 text-signal shrink-0"></i>
+              <div>
+                <h3 class="font-semibold text-ink-100">One-off messages</h3>
+                <p class="mt-1 text-sm leading-6 text-ink-400">
+                  Keep short-lived communications separate from your normal inbox.
+                </p>
+              </div>
+            </div>
 
-</ol>
+          </div>
+        </section>
 
-<h2 class="mt-10 text-2xl font-bold">
-What can a temporary email address be used for?
-</h2>
+        <section>
+          <h2 class="text-xl font-bold text-ink-100">Why use Vanish?</h2>
 
-<ul class="mt-5 space-y-3 text-ink-400">
-<li>✓ Testing registration and email workflows</li>
-<li>✓ Receiving one-time confirmation messages</li>
-<li>✓ Keeping marketing and promotional mail away from your main inbox</li>
-<li>✓ Temporary online services and low-stakes communication</li>
-</ul>
+          <div class="grid sm:grid-cols-3 gap-4 mt-5">
 
-<div class="mt-8 rounded-2xl border border-signal/20 bg-signal/5 p-5 text-sm text-ink-300 leading-6">
-<strong class="text-ink-100">Don't use temporary email for important accounts.</strong>
-Banking, healthcare, account recovery and other services that require
-long-term access should use a permanent email address.
-</div>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <i data-lucide="zap" class="h-5 w-5 text-signal"></i>
+              <h3 class="mt-3 font-semibold">Instant</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-400">Create an address without a lengthy registration process.</p>
+            </div>
 
-</div>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <i data-lucide="shield" class="h-5 w-5 text-violet"></i>
+              <h3 class="mt-3 font-semibold">Separate</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-400">Keep temporary communications away from your everyday inbox.</p>
+            </div>
 
-</section>
+            <div class="rounded-xl border border-ink-700 bg-ink-850/70 p-5">
+              <i data-lucide="mouse-pointer-click" class="h-5 w-5 text-signal"></i>
+              <h3 class="mt-3 font-semibold">Simple</h3>
+              <p class="mt-2 text-sm leading-6 text-ink-400">Generate and use an address directly from your browser.</p>
+            </div>
 
-<section class="max-w-4xl mx-auto px-4 pb-16">
+          </div>
+        </section>
 
-<h2 class="text-2xl font-bold text-center">
-Related guides
-</h2>
+        <section>
+          <h2 class="text-xl font-bold text-ink-100">Temporary email vs. your normal email</h2>
 
-<div class="mt-6 grid sm:grid-cols-2 gap-3">
-<a href="temporary-email.html" class="border border-ink-800 rounded-xl p-4">Temporary email</a>
-<a href="disposable-email.html" class="border border-ink-800 rounded-xl p-4">Disposable email</a>
-<a href="temporary-inbox.html" class="border border-ink-800 rounded-xl p-4">Temporary inbox</a>
-<a href="free-temporary-email.html" class="border border-ink-800 rounded-xl p-4">Free temporary email</a>
-<a href="email-for-website-testing.html" class="border border-ink-800 rounded-xl p-4">Website testing email</a>
-<a href="10-minute-mail.html" class="border border-ink-800 rounded-xl p-4">10 minute mail</a>
-</div>
+          <div class="mt-5 overflow-hidden rounded-xl border border-ink-700">
+            <div class="grid grid-cols-2 bg-ink-850 border-b border-ink-700">
+              <div class="p-4 text-xs font-semibold uppercase tracking-wider text-ink-400">Temporary</div>
+              <div class="p-4 text-xs font-semibold uppercase tracking-wider text-ink-400">Permanent</div>
+            </div>
 
-</section>
+            <div class="grid grid-cols-2 border-b border-ink-800">
+              <div class="p-4 text-sm text-ink-300">Short-term use</div>
+              <div class="p-4 text-sm text-ink-300">Long-term account</div>
+            </div>
 
-</main>
+            <div class="grid grid-cols-2 border-b border-ink-800">
+              <div class="p-4 text-sm text-ink-300">Useful for one-off messages</div>
+              <div class="p-4 text-sm text-ink-300">Useful for important accounts</div>
+            </div>
 
-<footer class="border-t border-ink-800">
-<div class="max-w-6xl mx-auto px-4 py-8 text-center text-xs text-ink-500">
-© 2026 Vanish ·
-<a href="../privacy.html">Privacy</a> ·
-<a href="../terms.html">Terms</a> ·
-<a href="../contact.html">Contact</a>
-</div>
-</footer>
+            <div class="grid grid-cols-2">
+              <div class="p-4 text-sm text-ink-300">Keeps temporary mail separate</div>
+              <div class="p-4 text-sm text-ink-300">Designed for ongoing communication</div>
+            </div>
+          </div>
+        </section>
 
+        <section class="rounded-xl border border-signal/20 bg-signal/[0.04] p-5">
+          <h2 class="font-semibold text-ink-100">Use permanent email for important accounts</h2>
+          <p class="mt-2 text-sm leading-6 text-ink-400">
+            Temporary email is not a replacement for an email address you need
+            to retain. Use a permanent account for banking, healthcare,
+            important personal accounts and account recovery.
+          </p>
+        </section>
+
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="border-t border-ink-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span class="text-xs text-ink-500">© 2026 Vanish.</span>
+      <div class="flex flex-wrap justify-center gap-5 text-xs text-ink-500">
+        <a href="./about.html">About</a>
+        <a href="./how-it-works.html">How it works</a>
+        <a href="./faq.html">FAQ</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="./contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>lucide.createIcons();</script>
 </body>
 </html>
