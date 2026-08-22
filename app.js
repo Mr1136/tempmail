@@ -1706,6 +1706,25 @@
             )
         );
 
+      // --------------------------------------------------------------
+      // GA4 — New message received
+      //
+      // Only fire when there was already an inbox list loaded.
+      // This prevents the initial inbox load from counting existing
+      // messages as newly received mail.
+      // --------------------------------------------------------------
+
+      if (
+        hasNewMail &&
+        previousIds.size > 0 &&
+        typeof gtag === 'function'
+      ) {
+        gtag(
+          'event',
+          'message_received'
+        );
+      }
+
       state.messages =
         messages;
 
@@ -1944,6 +1963,17 @@
       textarea.remove();
     }
 
+    // --------------------------------------------------------------------
+    // GA4 — Address copied
+    // --------------------------------------------------------------------
+
+    if (typeof gtag === 'function') {
+      gtag(
+        'event',
+        'copy_address'
+      );
+    }
+
     if (
       el.copyTooltip
     ) {
@@ -2020,6 +2050,20 @@
         account
       );
 
+      // ------------------------------------------------------------------
+      // GA4 — Random inbox successfully created
+      // ------------------------------------------------------------------
+
+      if (typeof gtag === 'function') {
+        gtag(
+          'event',
+          'inbox_created',
+          {
+            method: 'random'
+          }
+        );
+      }
+
     } catch (error) {
 
       el.addressText.textContent =
@@ -2085,6 +2129,20 @@
       await activateInbox(
         account
       );
+
+      // ------------------------------------------------------------------
+      // GA4 — Custom inbox successfully created
+      // ------------------------------------------------------------------
+
+      if (typeof gtag === 'function') {
+        gtag(
+          'event',
+          'custom_inbox_created',
+          {
+            method: 'custom'
+          }
+        );
+      }
 
       if (
         el.inputPrefix
@@ -2154,6 +2212,17 @@
        * First delete the actual TempMailPortal inbox.
        */
       await deleteInbox();
+
+      // ------------------------------------------------------------------
+      // GA4 — Inbox deleted successfully
+      // ------------------------------------------------------------------
+
+      if (typeof gtag === 'function') {
+        gtag(
+          'event',
+          'inbox_deleted'
+        );
+      }
 
       /*
        * If this is a custom Vanish address,
